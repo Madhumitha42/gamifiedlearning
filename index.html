@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ग्राम विद्या | Gram Vidya — Rural Learning</title>
+<style>
+:root{
+  --bark: #2e2a1f;
+  --moss: #3f5c3a;
+  --moss-dark: #2a3f27;
+  --leaf: #6b8f4e;
+  --leaf-light: #9bc06b;
+  --gold: #d9a441;
+  --gold-light: #f0c878;
+  --sky-day: #aee0e8;
+  --sky-eve: #f3c98b;
+  --cream: #faf6ec;
+  --ink: #2b2620;
+  --berry: #b5483f;
+  --paper: #fffdf7;
+  --shadow: rgba(20,30,15,0.25);
+  --radius: 14px;
+  --font-display: 'Poppins', 'Noto Sans', sans-serif;
+  --font-body: 'Noto Sans', 'Noto Sans Devanagari', sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;font-family:var(--font-body);color:var(--ink);background:var(--cream);}
+@font-face{font-family:'Poppins';src:local('Poppins');}
+button{font-family:inherit;cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+.hidden{display:none !important;}
+img{max-width:100%;}
+
+/* ===== UTIL ===== */
+.btn{
+  border:none;border-radius:999px;padding:12px 26px;font-weight:600;font-size:15px;
+  background:var(--leaf);color:#fff;box-shadow:0 4px 0 var(--moss-dark);transition:transform .12s, box-shadow .12s;
+}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--moss-dark);}
+.btn.gold{background:var(--gold);box-shadow:0 4px 0 #a4781f;color:#3a2a05;}
+.btn.gold:active{box-shadow:0 1px 0 #a4781f;}
+.btn.outline{background:transparent;color:var(--moss-dark);box-shadow:none;border:2px solid var(--moss);}
+.btn.berry{background:var(--berry);box-shadow:0 4px 0 #7e2f28;}
+.btn.berry:active{box-shadow:0 1px 0 #7e2f28;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.card{background:var(--paper);border-radius:var(--radius);box-shadow:0 6px 20px var(--shadow);padding:20px;}
+.pill{display:inline-block;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.04em;}
+.pill.present{background:#dff3e0;color:#1f6b2e;}
+.pill.absent{background:#fbdede;color:#9c2b27;}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+.grow{flex:1;min-width:0;}
+.lang-select{
+  background:var(--paper);border:2px solid var(--moss);border-radius:999px;padding:8px 14px;font-weight:600;color:var(--moss-dark);
+}
+::-webkit-scrollbar{width:10px;}
+::-webkit-scrollbar-thumb{background:var(--leaf);border-radius:6px;}
+
+/* ===== TOP LANGUAGE BAR (visible everywhere) ===== */
+.lang-bar{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  display:flex;justify-content:flex-end;align-items:center;gap:10px;
+  padding:10px 18px;background:rgba(255,253,247,.9);backdrop-filter:blur(6px);
+  box-shadow:0 2px 10px rgba(0,0,0,0.06);
+}
+.lang-bar label{font-size:12px;font-weight:700;color:var(--moss-dark);}
+
+/* ===================== FOREST LOGIN SCENE ===================== */
+#screen-login{
+  position:relative;min-height:100vh;overflow:hidden;
+  background:linear-gradient(180deg,#bfe6ec 0%, #d7ecd0 55%, #c9dcae 100%);
+  display:flex;align-items:center;justify-content:center;padding:80px 16px 40px;
+}
+.sun{
+  position:absolute;top:8%;left:12%;width:90px;height:90px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #fff7d8, var(--gold-light) 60%, var(--gold) 100%);
+  box-shadow:0 0 60px 20px rgba(240,200,120,0.45);
+  animation:sunpulse 6s ease-in-out infinite;
+}
+@keyframes sunpulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+
+.cloud{position:absolute;opacity:.85;animation:drift linear infinite;}
+.cloud svg{width:100%;height:100%;display:block;}
+@keyframes drift{from{transform:translateX(-120px);}to{transform:translateX(110vw);}}
+
+.bird{position:absolute;width:34px;height:20px;animation:flap .55s steps(2) infinite;}
+.bird-fly{position:absolute;animation-name:flypath;animation-timing-function:linear;animation-iteration-count:infinite;}
+@keyframes flap{0%{background-position-x:0;}100%{background-position-x:-68px;}}
+@keyframes flypath-a{from{transform:translate(-10vw,40vh) scale(.8);}to{transform:translate(110vw,8vh) scale(.8);}}
+@keyframes flypath-b{from{transform:translate(110vw,30vh) scale(.6) scaleX(-1);}to{transform:translate(-10vw,55vh) scale(.6) scaleX(-1);}}
+@keyframes flypath-c{from{transform:translate(-10vw,18vh) scale(1);}to{transform:translate(110vw,42vh) scale(1);}}
+
+.hill-back{position:absolute;bottom:0;left:0;width:100%;height:38%;background:var(--leaf-light);
+  border-radius:50% 50% 0 0/100px 100px 0 0;opacity:.7;}
+.hill-front{position:absolute;bottom:0;left:0;width:100%;height:26%;background:var(--moss);
+  clip-path:polygon(0 100%, 0 40%, 15% 55%, 32% 25%, 50% 50%, 68% 20%, 85% 48%, 100% 30%, 100% 100%);}
+
+.tree{position:absolute;bottom:0;}
+.tree .trunk{position:absolute;left:50%;bottom:0;width:10px;height:46px;background:var(--bark);transform:translateX(-50%);border-radius:3px;}
+.tree .canopy{position:absolute;left:50%;bottom:34px;width:74px;height:74px;background:var(--moss);border-radius:50%;transform:translateX(-50%);box-shadow:inset -8px -8px 0 rgba(0,0,0,0.08);}
+.tree .canopy:before{content:'';position:absolute;left:-22px;top:14px;width:50px;height:50px;background:var(--leaf);border-radius:50%;}
+.tree .canopy:after{content:'';position:absolute;right:-18px;top:18px;width:42px;height:42px;background:var(--leaf-light);border-radius:50%;}
+.tree.sway{animation:sway 4.5s ease-in-out infinite;}
+@keyframes sway{0%,100%{transform:rotate(0deg);}50%{transform:rotate(1.5deg);}}
+
+.butterfly{position:absolute;width:14px;height:10px;animation:butterflyfloat 5s ease-in-out infinite;}
+.butterfly svg{width:100%;height:100%;}
+@keyframes butterflyfloat{0%,100%{transform:translateY(0) rotate(0deg);}25%{transform:translateY(-14px) translateX(8px) rotate(8deg);}50%{transform:translateY(-2px) translateX(18px) rotate(-6deg);}75%{transform:translateY(-16px) translateX(6px) rotate(6deg);}}
+
+.login-card-wrap{position:relative;z-index:20;width:100%;max-width:430px;}
+.login-card{
+  background:rgba(255,253,247,0.94);border-radius:20px;padding:34px 30px;
+  box-shadow:0 20px 50px rgba(20,40,10,0.28);border:1px solid rgba(255,255,255,0.6);
+  text-align:center;
+}
+.login-card h1{
+  font-family:var(--font-display);font-size:26px;margin:6px 0 2px;color:var(--moss-dark);letter-spacing:.01em;
+}
+.login-card .sub{font-size:13px;color:#6a6354;margin-bottom:22px;}
+.login-card .logo-leaf{font-size:40px;display:block;margin-bottom:6px;}
+.role-toggle{display:flex;background:#eef0e2;border-radius:999px;padding:4px;margin-bottom:18px;}
+.role-toggle button{flex:1;border:none;background:transparent;border-radius:999px;padding:9px 0;font-weight:700;font-size:13px;color:#6a6354;}
+.role-toggle button.active{background:var(--moss);color:#fff;box-shadow:0 3px 10px rgba(0,0,0,0.15);}
+.field{margin-bottom:14px;text-align:left;}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--moss-dark);margin-bottom:5px;}
+.field input,.field select{
+  width:100%;padding:11px 14px;border-radius:10px;border:2px solid #d9d3bf;background:#fff;font-size:15px;
+}
+.field input:focus,.field select:focus{outline:none;border-color:var(--leaf);}
+.login-card .btn{width:100%;margin-top:8px;font-size:16px;}
+.login-error{color:var(--berry);font-size:13px;margin-top:10px;min-height:18px;font-weight:600;}
+.demo-hint{font-size:11px;color:#998f78;margin-top:14px;line-height:1.5;}
+
+/* ===================== STUDENT APP ===================== */
+#screen-student{min-height:100vh;background:var(--cream);padding-top:64px;}
+.app-header{
+  position:sticky;top:64px;z-index:10;background:linear-gradient(135deg,var(--moss),var(--moss-dark));
+  color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+}
+.app-header h2{margin:0;font-family:var(--font-display);font-size:19px;}
+.app-header .meta{font-size:12px;opacity:.85;}
+.app-body{max-width:920px;margin:0 auto;padding:20px;}
+.tabbar{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.tabbar button{
+  border:none;background:#eef0e2;color:var(--moss-dark);padding:10px 16px;border-radius:999px;font-weight:700;font-size:13px;
+}
+.tabbar button.active{background:var(--gold);color:#3a2a05;}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;}
+.stat-box{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 3px 10px rgba(0,0,0,0.06);}
+.stat-box .num{font-size:24px;font-weight:800;color:var(--moss-dark);}
+.stat-box .lbl{font-size:11px;color:#7a7261;text-transform:uppercase;letter-spacing:.04em;}
+
+.quiz-card{text-align:center;}
+.quiz-q{font-size:20px;font-weight:700;margin:10px 0 22px;color:var(--ink);}
+.quiz-opts{display:grid;gap:10px;}
+.opt-btn{
+  background:#fff;border:2px solid #ddd6bf;border-radius:12px;padding:14px;font-size:15px;font-weight:600;text-align:left;
+}
+.opt-btn:hover{border-color:var(--leaf);}
+.opt-btn.correct{background:#dff3e0;border-color:#3f8f4a;}
+.opt-btn.wrong{background:#fbdede;border-color:var(--berry);}
+.progress-track{height:10px;background:#eee7d4;border-radius:6px;overflow:hidden;margin:14px 0;}
+.progress-fill{height:100%;background:var(--leaf);transition:width .3s;}
+.badge-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+.badge{background:var(--gold-light);color:#5a3f0a;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:700;}
+.video-item{display:flex;gap:12px;align-items:center;background:#fff;border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:0 3px 8px rgba(0,0,0,0.05);}
+.video-item .thumb{width:64px;height:64px;border-radius:8px;background:var(--moss);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;flex:none;}
+.video-item a{color:var(--moss-dark);font-weight:700;text-decoration:none;}
+.video-item .desc{font-size:12px;color:#7a7261;}
+.rank-list{list-style:none;margin:0;padding:0;}
+.rank-list li{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-radius:10px;margin-bottom:6px;background:#fff;}
+.rank-list li.me{background:var(--gold-light);}
+.rank-list .pos{font-weight:800;color:var(--moss-dark);width:28px;}
+.offline-banner{background:#fff3da;color:#7a5410;padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;margin-bottom:14px;text-align:center;}
+
+/* ===================== TEACHER APP ===================== */
+#screen-teacher{min-height:100vh;background:#f3f0e4;padding-top:64px;}
+.t-header{
+  background:linear-gradient(135deg,var(--bark),#1b1812);color:#fff;padding:18px 24px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+}
+.t-header h2{margin:0;font-family:var(--font-display);}
+.t-body{max-width:1100px;margin:0 auto;padding:22px;}
+.t-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.t-tabs button{border:none;background:#e4ded0;padding:10px 16px;border-radius:10px;font-weight:700;font-size:13px;color:#4a4434;}
+.t-tabs button.active{background:var(--bark);color:#fff;}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;}
+table th,table td{padding:10px 12px;text-align:left;font-size:13px;border-bottom:1px solid #eee2cf;}
+table th{background:#f0ead8;color:#4a4434;font-weight:700;}
+table tr:last-child td{border-bottom:none;}
+.t-section{margin-bottom:26px;}
+.t-section h3{font-family:var(--font-display);color:var(--bark);margin-bottom:10px;}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:14px;}
+.form-grid .field{margin-bottom:0;}
+.small-note{font-size:12px;color:#8a8267;margin-top:6px;}
+.action-link{color:var(--moss-dark);font-weight:700;font-size:12px;text-decoration:none;margin-right:8px;}
+.empty-state{text-align:center;padding:30px;color:#9a9279;font-size:13px;}
+</style>
+</head>
+<body>
+
+<!-- ============ LANGUAGE BAR ============ -->
+<div class="lang-bar">
+  <label data-i18n="langLabel">Language</label>
+  <select id="globalLangSelect" class="lang-select"></select>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 1: FOREST LOGIN -->
+<!-- ============================================================ -->
+<div id="screen-login">
+  <div class="sun"></div>
+
+  <!-- clouds -->
+  <div class="cloud" style="top:10%;width:140px;height:50px;animation-duration:48s;">
+    <svg viewBox="0 0 140 50"><ellipse cx="35" cy="32" rx="35" ry="18" fill="#fff"/><ellipse cx="75" cy="22" rx="40" ry="22" fill="#fff"/><ellipse cx="110" cy="34" rx="28" ry="15" fill="#fff"/></svg>
+  </div>
+  <div class="cloud" style="top:18%;width:100px;height:38px;animation-duration:65s;animation-delay:-20s;opacity:.7;">
+    <svg viewBox="0 0 140 50"><ellipse cx="35" cy="32" rx="35" ry="18" fill="#fff"/><ellipse cx="75" cy="22" rx="40" ry="22" fill="#fff"/></svg>
+  </div>
+
+  <!-- birds flying across -->
+  <div class="bird-fly" style="animation-name:flypath-a;animation-duration:14s;">
+    <svg width="30" height="18" viewBox="0 0 30 18"><path d="M0 9 Q7 0 15 9 Q23 0 30 9 Q23 6 15 11 Q7 6 0 9 Z" fill="#2b2620"/></svg>
+  </div>
+  <div class="bird-fly" style="animation-name:flypath-c;animation-duration:18s;animation-delay:-4s;">
+    <svg width="22" height="13" viewBox="0 0 30 18"><path d="M0 9 Q7 0 15 9 Q23 0 30 9 Q23 6 15 11 Q7 6 0 9 Z" fill="#3a342a"/></svg>
+  </div>
+  <div class="bird-fly" style="animation-name:flypath-b;animation-duration:16s;animation-delay:-8s;">
+    <svg width="26" height="15" viewBox="0 0 30 18"><path d="M0 9 Q7 0 15 9 Q23 0 30 9 Q23 6 15 11 Q7 6 0 9 Z" fill="#2b2620"/></svg>
+  </div>
+  <div class="bird-fly" style="animation-name:flypath-a;animation-duration:21s;animation-delay:-11s;">
+    <svg width="18" height="11" viewBox="0 0 30 18"><path d="M0 9 Q7 0 15 9 Q23 0 30 9 Q23 6 15 11 Q7 6 0 9 Z" fill="#4a443a"/></svg>
+  </div>
+
+  <!-- butterflies -->
+  <div class="butterfly" style="left:8%;bottom:32%;animation-delay:0s;">
+    <svg viewBox="0 0 20 16"><circle cx="6" cy="8" r="6" fill="#e89b3c"/><circle cx="14" cy="8" r="6" fill="#d9a441"/></svg>
+  </div>
+  <div class="butterfly" style="left:85%;bottom:40%;animation-delay:1.4s;">
+    <svg viewBox="0 0 20 16"><circle cx="6" cy="8" r="6" fill="#b5483f"/><circle cx="14" cy="8" r="6" fill="#e89b3c"/></svg>
+  </div>
+
+  <div class="hill-back"></div>
+  <div class="hill-front"></div>
+
+  <!-- trees scattered -->
+  <div class="tree sway" style="left:5%;"><div class="canopy"></div><div class="trunk"></div></div>
+  <div class="tree sway" style="left:15%;transform:scale(.8);animation-delay:-1s;"><div class="canopy"></div><div class="trunk"></div></div>
+  <div class="tree sway" style="right:6%;animation-delay:-2s;"><div class="canopy"></div><div class="trunk"></div></div>
+  <div class="tree sway" style="right:16%;transform:scale(.7);animation-delay:-3s;"><div class="canopy"></div><div class="trunk"></div></div>
+  <div class="tree sway" style="left:50%;transform:scale(.6);animation-delay:-1.5s;"><div class="canopy"></div><div class="trunk"></div></div>
+
+  <div class="login-card-wrap">
+    <div class="login-card">
+      <span class="logo-leaf">🌿</span>
+      <h1 data-i18n="appName">Gram Vidya</h1>
+      <div class="sub" data-i18n="appTagline">Learning that grows with you</div>
+
+      <div class="role-toggle">
+        <button id="roleStudentBtn" class="active" data-i18n="roleStudent">Student</button>
+        <button id="roleTeacherBtn" data-i18n="roleTeacher">Teacher</button>
+      </div>
+
+      <div class="field">
+        <label data-i18n="fieldName">Your Name</label>
+        <input id="loginName" type="text" autocomplete="off">
+      </div>
+      <div class="field" id="classFieldWrap">
+        <label data-i18n="fieldClass">Class / Grade</label>
+        <select id="loginClass">
+          <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+          <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+        </select>
+      </div>
+      <div class="field hidden" id="passFieldWrap">
+        <label data-i18n="fieldPass">Teacher Password</label>
+        <input id="loginPass" type="password" autocomplete="off">
+      </div>
+
+      <button class="btn gold" id="loginSubmitBtn" data-i18n="btnEnter">Enter the Garden</button>
+      <div class="login-error" id="loginError"></div>
+      <div class="demo-hint" data-i18n="demoHint">Teacher password for this demo: <b>teacher123</b></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 2: STUDENT APP -->
+<!-- ============================================================ -->
+<div id="screen-student" class="hidden">
+  <div class="app-header">
+    <div>
+      <h2 id="studentGreeting">Hello!</h2>
+      <div class="meta" id="studentMeta"></div>
+    </div>
+    <div class="row">
+      <span class="pill present" id="studentAttendancePill" data-i18n="markedPresent">Marked present today</span>
+      <button class="btn outline" id="studentLogoutBtn" data-i18n="btnLogout">Log out</button>
+    </div>
+  </div>
+  <div class="app-body">
+    <div class="offline-banner hidden" id="offlineBanner" data-i18n="offlineNotice">You're offline — your progress is saved on this device and will stay safe.</div>
+
+    <div class="tabbar">
+      <button class="active" data-stab="play" data-i18n="tabPlay">Play & Learn</button>
+      <button data-stab="videos" data-i18n="tabVideos">Lessons</button>
+      <button data-stab="rank" data-i18n="tabRank">Ranking</button>
+      <button data-stab="progress" data-i18n="tabProgress">My Progress</button>
+    </div>
+
+    <!-- PLAY TAB -->
+    <div id="stab-play">
+      <div class="stat-grid">
+        <div class="stat-box"><div class="num" id="statScore">0</div><div class="lbl" data-i18n="statScore">Score</div></div>
+        <div class="stat-box"><div class="num" id="statStreak">0</div><div class="lbl" data-i18n="statStreak">Streak</div></div>
+        <div class="stat-box"><div class="num" id="statBadges">0</div><div class="lbl" data-i18n="statBadges">Badges</div></div>
+      </div>
+
+      <div class="card quiz-card" id="quizCard">
+        <div class="progress-track"><div class="progress-fill" id="quizProgressFill" style="width:0%"></div></div>
+        <div class="quiz-q" id="quizQuestion">—</div>
+        <div class="quiz-opts" id="quizOptions"></div>
+      </div>
+
+      <div class="card hidden" id="quizDoneCard" style="text-align:center;margin-top:16px;">
+        <h3 data-i18n="quizDoneTitle">Great work! 🎉</h3>
+        <p id="quizDoneSummary"></p>
+        <div class="badge-row" id="quizDoneBadges"></div>
+        <button class="btn gold" id="quizReplayBtn" data-i18n="btnPlayAgain" style="margin-top:14px;">Play Again</button>
+      </div>
+    </div>
+
+    <!-- VIDEOS TAB -->
+    <div id="stab-videos" class="hidden">
+      <h3 style="font-family:var(--font-display);color:var(--moss-dark)" data-i18n="lessonsTitle">Lessons from your Teacher</h3>
+      <div id="studentVideoList"></div>
+    </div>
+
+    <!-- RANK TAB -->
+    <div id="stab-rank" class="hidden">
+      <h3 style="font-family:var(--font-display);color:var(--moss-dark)" data-i18n="rankTitle">Class Ranking</h3>
+      <ul class="rank-list" id="rankList"></ul>
+    </div>
+
+    <!-- PROGRESS TAB -->
+    <div id="stab-progress" class="hidden">
+      <h3 style="font-family:var(--font-display);color:var(--moss-dark)" data-i18n="progressTitle">My Progress</h3>
+      <table>
+        <thead><tr><th data-i18n="colDate">Date</th><th data-i18n="colActivity">Activity</th><th data-i18n="colScore">Score</th></tr></thead>
+        <tbody id="progressTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 3: TEACHER APP -->
+<!-- ============================================================ -->
+<div id="screen-teacher" class="hidden">
+  <div class="t-header">
+    <h2 data-i18n="teacherDash">Teacher Dashboard</h2>
+    <div class="row">
+      <span id="teacherName"></span>
+      <button class="btn outline" id="teacherLogoutBtn" style="color:#fff;border-color:#fff;" data-i18n="btnLogout">Log out</button>
+    </div>
+  </div>
+  <div class="t-body">
+    <div class="t-tabs">
+      <button class="active" data-ttab="overview" data-i18n="tTabOverview">Overview</button>
+      <button data-ttab="attendance" data-i18n="tTabAttendance">Attendance</button>
+      <button data-ttab="marks" data-i18n="tTabMarks">Marks & Tests</button>
+      <button data-ttab="assignments" data-i18n="tTabAssignments">Assignments</button>
+      <button data-ttab="ranking" data-i18n="tTabRanking">Ranking</button>
+      <button data-ttab="videos" data-i18n="tTabVideos">Videos</button>
+      <button data-ttab="mail" data-i18n="tTabMail">Attendance Mail</button>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div id="ttab-overview">
+      <div class="stat-grid">
+        <div class="stat-box"><div class="num" id="ovStudents">0</div><div class="lbl" data-i18n="ovStudents">Students</div></div>
+        <div class="stat-box"><div class="num" id="ovPresentToday">0</div><div class="lbl" data-i18n="ovPresentToday">Present Today</div></div>
+        <div class="stat-box"><div class="num" id="ovAvgScore">0</div><div class="lbl" data-i18n="ovAvgScore">Avg. Score</div></div>
+        <div class="stat-box"><div class="num" id="ovAssignments">0</div><div class="lbl" data-i18n="ovAssignments">Assignments</div></div>
+      </div>
+      <div class="t-section">
+        <h3 data-i18n="ovTopStudents">Top Students</h3>
+        <table><thead><tr><th data-i18n="colRank">Rank</th><th data-i18n="colName">Name</th><th data-i18n="colClass">Class</th><th data-i18n="colScore">Score</th></tr></thead><tbody id="ovTopTable"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ATTENDANCE -->
+    <div id="ttab-attendance" class="hidden">
+      <div class="t-section">
+        <h3 data-i18n="attToday">Today's Attendance Log</h3>
+        <table>
+          <thead><tr><th data-i18n="colName">Name</th><th data-i18n="colClass">Class</th><th data-i18n="colStatus">Status</th><th data-i18n="colLoginTime">Login Time</th><th data-i18n="colLogoutTime">Logout Time</th></tr></thead>
+          <tbody id="attendanceTableBody"></tbody>
+        </table>
+        <div class="empty-state hidden" id="attendanceEmpty" data-i18n="noRecords">No records yet.</div>
+      </div>
+    </div>
+
+    <!-- MARKS / TESTS -->
+    <div id="ttab-marks" class="hidden">
+      <div class="t-section">
+        <h3 data-i18n="addTest">Record a Test / Mark</h3>
+        <div class="form-grid">
+          <div class="field"><label data-i18n="fieldStudent">Student</label><select id="markStudentSelect"></select></div>
+          <div class="field"><label data-i18n="fieldTestName">Test / Subject Name</label><input id="markTestName" type="text"></div>
+          <div class="field"><label data-i18n="fieldMarksObtained">Marks Obtained</label><input id="markObtained" type="number" min="0"></div>
+          <div class="field"><label data-i18n="fieldMarksTotal">Out of</label><input id="markTotal" type="number" min="1" value="100"></div>
+        </div>
+        <button class="btn" id="addMarkBtn" data-i18n="btnSave">Save</button>
+      </div>
+      <div class="t-section">
+        <h3 data-i18n="allMarks">All Recorded Marks</h3>
+        <table>
+          <thead><tr><th data-i18n="colName">Name</th><th data-i18n="colTest">Test</th><th data-i18n="colMarks">Marks</th><th data-i18n="colDate">Date</th></tr></thead>
+          <tbody id="marksTableBody"></tbody>
+        </table>
+        <div class="empty-state hidden" id="marksEmpty" data-i18n="noRecords">No records yet.</div>
+      </div>
+    </div>
+
+    <!-- ASSIGNMENTS -->
+    <div id="ttab-assignments" class="hidden">
+      <div class="t-section">
+        <h3 data-i18n="addAssignment">Create Assignment</h3>
+        <div class="form-grid">
+          <div class="field"><label data-i18n="fieldTitle">Title</label><input id="assignTitle" type="text"></div>
+          <div class="field"><label data-i18n="fieldDueDate">Due Date</label><input id="assignDue" type="date"></div>
+          <div class="field"><label data-i18n="fieldClass">Class</label><select id="assignClass">
+            <option value="all" data-i18n="allClasses">All Classes</option>
+            <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+            <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+          </select></div>
+        </div>
+        <button class="btn" id="addAssignBtn" data-i18n="btnSave">Save</button>
+      </div>
+      <div class="t-section">
+        <h3 data-i18n="allAssignments">All Assignments</h3>
+        <table>
+          <thead><tr><th data-i18n="colTitle">Title</th><th data-i18n="colClass">Class</th><th data-i18n="colDueDate">Due Date</th></tr></thead>
+          <tbody id="assignmentsTableBody"></tbody>
+        </table>
+        <div class="empty-state hidden" id="assignEmpty" data-i18n="noRecords">No records yet.</div>
+      </div>
+    </div>
+
+    <!-- RANKING -->
+    <div id="ttab-ranking" class="hidden">
+      <div class="t-section">
+        <h3 data-i18n="classRankingFull">Full Class Ranking</h3>
+        <table>
+          <thead><tr><th data-i18n="colRank">Rank</th><th data-i18n="colName">Name</th><th data-i18n="colClass">Class</th><th data-i18n="colScore">Total Score</th></tr></thead>
+          <tbody id="teacherRankTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- VIDEOS (teacher-only upload) -->
+    <div id="ttab-videos" class="hidden">
+      <div class="t-section">
+        <h3 data-i18n="uploadVideo">Add a Lesson Video (Teacher Only)</h3>
+        <p class="small-note" data-i18n="videoNote">Paste a video link (YouTube, Vimeo, or any direct video URL). Students will see it under Lessons.</p>
+        <div class="form-grid">
+          <div class="field"><label data-i18n="fieldVideoTitle">Video Title</label><input id="videoTitle" type="text"></div>
+          <div class="field"><label data-i18n="fieldVideoUrl">Video URL</label><input id="videoUrl" type="url" placeholder="https://..."></div>
+          <div class="field"><label data-i18n="fieldClass">Class</label><select id="videoClass">
+            <option value="all" data-i18n="allClasses">All Classes</option>
+            <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+            <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+          </select></div>
+        </div>
+        <button class="btn" id="addVideoBtn" data-i18n="btnAddVideo">Add Video</button>
+      </div>
+      <div class="t-section">
+        <h3 data-i18n="allVideos">All Lesson Videos</h3>
+        <div id="teacherVideoList"></div>
+        <div class="empty-state hidden" id="videoEmpty" data-i18n="noRecords">No records yet.</div>
+      </div>
+    </div>
+
+    <!-- ATTENDANCE MAIL -->
+    <div id="ttab-mail" class="hidden">
+      <div class="t-section">
+        <h3 data-i18n="mailTitle">Attendance Emails</h3>
+        <p class="small-note" data-i18n="mailExplain">This app works fully offline and has no mail server, so it cannot send email by itself. Each row below is a ready-made attendance message — click "Send Email" to open it in your phone or computer's email app, addressed to the student (and you as teacher can CC yourself).</p>
+        <table>
+          <thead><tr><th data-i18n="colName">Name</th><th data-i18n="colStatus">Status</th><th data-i18n="colLoginTime">Login</th><th data-i18n="colLogoutTime">Logout</th><th data-i18n="colAction">Action</th></tr></thead>
+          <tbody id="mailTableBody"></tbody>
+        </table>
+        <div class="empty-state hidden" id="mailEmpty" data-i18n="noRecords">No records yet.</div>
+      </div>
+      <div class="t-section">
+        <h3 data-i18n="teacherEmailSetup">Your Email (for CC / records)</h3>
+        <div class="field" style="max-width:320px;"><input id="teacherEmailInput" type="email" placeholder="teacher@example.com"></div>
+        <button class="btn outline" id="saveTeacherEmailBtn" data-i18n="btnSave">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   I18N — translations
+   ========================================================================= */
+const LANGS = {
+  en:{name:"English"}, hi:{name:"हिन्दी"}, ta:{name:"தமிழ்"}, te:{name:"తెలుగు"},
+  bn:{name:"বাংলা"}, kn:{name:"ಕನ್ನಡ"}, mr:{name:"मराठी"}, gu:{name:"ગુજરાતી"},
+  pa:{name:"ਪੰਜਾਬੀ"}, ml:{name:"മലയാളം"}, or:{name:"ଓଡ଼ିଆ"}, as:{name:"অসমীয়া"},
+  ur:{name:"اردو"}, sa:{name:"संस्कृतम्"}, ks:{name:"کٲشُر"}, kok:{name:"कोंकणी"},
+  mai:{name:"मैथिली"}, mni:{name:"মৈতৈলোন্"}, ne:{name:"नेपाली"}, sd:{name:"سنڌي"},
+  sat:{name:"ᱥᱟᱱᱛᱟᱲᱤ"}, brx:{name:"बड़ो"}, doi:{name:"डोगरी"}
+};
+
+const STRINGS = {
+  langLabel:{en:"Language",hi:"भाषा",ta:"மொழி",te:"భాష",bn:"ভাষা",kn:"ಭಾಷೆ",mr:"भाषा",gu:"ભાષા",pa:"ਭਾਸ਼ਾ",ml:"ഭാഷ",or:"ଭାଷା",as:"ভাষা",ur:"زبان"},
+  appName:{en:"Gram Vidya",hi:"ग्राम विद्या",ta:"கிராம வித்யா",te:"గ్రామ విద్య",bn:"গ্রাম বিদ্যা",kn:"ಗ್ರಾಮ ವಿದ್ಯಾ",mr:"ग्राम विद्या",gu:"ગ્રામ વિદ્યા",pa:"ਗ੍ਰਾਮ ਵਿਦਿਆ",ml:"ഗ്രാമ വിദ്യ",or:"ଗ୍ରାମ ବିଦ୍ୟା",as:"গ্রাম বিদ্যা",ur:"گرام ودیا"},
+  appTagline:{en:"Learning that grows with you",hi:"सीखना जो आपके साथ बढ़ता है",ta:"உங்களுடன் வளரும் கற்றல்",te:"మీతో పెరిగే విద్య",bn:"শিক্ষা যা আপনার সাথে বাড়ে",kn:"ನಿಮ್ಮೊಂದಿಗೆ ಬೆಳೆಯುವ ಕಲಿಕೆ",mr:"तुमच्यासोबत वाढणारे शिक्षण",gu:"તમારી સાથે વધતું શિક્ષણ",pa:"ਤੁਹਾਡੇ ਨਾਲ ਵਧਣ ਵਾਲੀ ਸਿੱਖਿਆ",ml:"നിങ്ങളോടൊപ്പം വളരുന്ന പഠനം",or:"ତୁମ ସହିତ ବଢୁଥିବା ଶିକ୍ଷା",as:"আপোনার সৈতে বৃদ্ধি পাওয়া শিক্ষা",ur:"تعلیم جو آپ کے ساتھ بڑھتی ہے"},
+  roleStudent:{en:"Student",hi:"छात्र",ta:"மாணவர்",te:"విద్యార్థి",bn:"ছাত্র",kn:"ವಿದ್ಯಾರ್ಥಿ",mr:"विद्यार्थी",gu:"વિદ્યાર્થી",pa:"ਵਿਦਿਆਰਥੀ",ml:"വിദ്യാർത്ഥി",or:"ଛାତ୍ର",as:"ছাত্র",ur:"طالب علم"},
+  roleTeacher:{en:"Teacher",hi:"शिक्षक",ta:"ஆசிரியர்",te:"ఉపాధ్యాయుడు",bn:"শিক্ষক",kn:"ಶಿಕ್ಷಕ",mr:"शिक्षक",gu:"શિક્ષક",pa:"ਅਧਿਆਪਕ",ml:"അദ്ധ്യാപകൻ",or:"ଶିକ୍ଷକ",as:"শিক্ষক",ur:"استاد"},
+  fieldName:{en:"Your Name",hi:"आपका नाम",ta:"உங்கள் பெயர்",te:"మీ పేరు",bn:"আপনার নাম",kn:"ನಿಮ್ಮ ಹೆಸರು",mr:"तुमचे नाव",gu:"તમારું નામ",pa:"ਤੁਹਾਡਾ ਨਾਮ",ml:"നിന്റെ പേര്",or:"ତୁମର ନାମ",as:"আপোনার নাম",ur:"آپ کا نام"},
+  fieldClass:{en:"Class / Grade",hi:"कक्षा",ta:"வகுப்பு",te:"తరగతి",bn:"শ্রেণী",kn:"ತರಗತಿ",mr:"वर्ग",gu:"વર્ગ",pa:"ਕਲਾਸ",ml:"ക്ലാസ്",or:"ଶ୍ରେଣୀ",as:"শ্ৰেণী",ur:"کلاس"},
+  fieldPass:{en:"Teacher Password",hi:"शिक्षक पासवर्ड",ta:"ஆசிரியர் கடவுச்சொல்",te:"ఉపాధ్యాయ పాస్‌వర్డ్",bn:"শিক্ষক পাসওয়ার্ড",kn:"ಶಿಕ್ಷಕ ಪಾಸ್‌ವರ್ಡ್",mr:"शिक्षक पासवर्ड",gu:"શિક્ષક પાસવર્ડ",pa:"ਅਧਿਆਪਕ ਪਾਸਵਰਡ",ml:"അദ്ധ്യാപക പാസ്‌വേഡ്",or:"ଶିକ୍ଷକ ପାସୱାର୍ଡ",as:"শিক্ষক পাচৱৰ্ড",ur:"استاد پاس ورڈ"},
+  btnEnter:{en:"Enter the Garden",hi:"बगिया में प्रवेश करें",ta:"தோட்டத்தில் நுழையவும்",te:"గార్డెన్‌లోకి ప్రవేశించండి",bn:"বাগানে প্রবেশ করুন",kn:"ತೋಟ ಪ್ರವೇಶಿಸಿ",mr:"बागेत प्रवेश करा",gu:"બગીચામાં પ્રવેશ કરો",pa:"ਬਾਗ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ",ml:"തോട്ടത്തിലേക്ക് പ്രവേശിക്കുക",or:"ବଗିଚାରେ ପ୍ରବେଶ କରନ୍ତୁ",as:"বাগিচাত প্ৰৱেশ কৰক",ur:"باغ میں داخل ہوں"},
+  demoHint:{en:"Teacher password for this demo: <b>teacher123</b>",hi:"इस डेमो के लिए शिक्षक पासवर्ड: <b>teacher123</b>",ta:"டெமோவுக்கான ஆசிரியர் கடவுச்சொல்: <b>teacher123</b>",te:"డెమో కోసం ఉపాధ్యాయ పాస్‌వర్డ్: <b>teacher123</b>",bn:"ডেমোর জন্য শিক্ষক পাসওয়ার্ড: <b>teacher123</b>",kn:"ಡೆಮೋಗಾಗಿ ಶಿಕ್ಷಕ ಪಾಸ್‌ವರ್ಡ್: <b>teacher123</b>",mr:"डेमोसाठी शिक्षक पासवर्ड: <b>teacher123</b>",gu:"ડેમો માટે શિક્ષક પાસવર્ડ: <b>teacher123</b>",pa:"ਡੈਮੋ ਲਈ ਅਧਿਆਪਕ ਪਾਸਵਰਡ: <b>teacher123</b>",ml:"ഡെമോയ്ക്കുള്ള അദ്ധ്യാപക പാസ്‌വേഡ്: <b>teacher123</b>",or:"ଡେମୋ ପାଇଁ ଶିକ୍ଷକ ପାସୱାର୍ଡ: <b>teacher123</b>",as:"ডেমোৰ বাবে শিক্ষক পাচৱৰ্ড: <b>teacher123</b>",ur:"ڈیمو کے لیے استاد پاس ورڈ: <b>teacher123</b>"},
+  btnLogout:{en:"Log out",hi:"लॉग आउट",ta:"வெளியேறு",te:"లాగ్ అవుట్",bn:"লগ আউট",kn:"ಲಾಗ್ ಔಟ್",mr:"लॉग आउट",gu:"લોગ આઉટ",pa:"ਲਾਗ ਆਉਟ",ml:"ലോഗ് ഔട്ട്",or:"ଲଗ ଆଉଟ",as:"লগ আউট",ur:"لاگ آؤٹ"},
+  markedPresent:{en:"Marked present today",hi:"आज उपस्थित दर्ज",ta:"இன்று வந்ததாக குறிக்கப்பட்டது",te:"ఈరోజు హాజరుగా గుర్తించబడింది",bn:"আজ উপস্থিত চিহ্নিত",kn:"ಇಂದು ಹಾಜರಿ ದಾಖಲಾಗಿದೆ",mr:"आज उपस्थित नोंदवले",gu:"આજે હાજર નોંધાયેલ",pa:"ਅੱਜ ਹਾਜ਼ਰ ਦਰਜ",ml:"ഇന്ന് ഹാജർ രേഖപ്പെടുത്തി",or:"ଆଜି ଉପସ୍ଥିତ ଚିହ୍ନିତ",as:"আজি উপস্থিত চিহ্নিত",ur:"آج حاضر درج"},
+  offlineNotice:{en:"You're offline — your progress is saved on this device and will stay safe.",hi:"आप ऑफ़लाइन हैं — आपकी प्रगति इस डिवाइस पर सुरक्षित है।",ta:"நீங்கள் ஆஃப்லைனில் இருக்கிறீர்கள் — உங்கள் முன்னேற்றம் இந்த சாதனத்தில் பாதுகாப்பாக சேமிக்கப்பட்டுள்ளது.",te:"మీరు ఆఫ్‌లైన్‌లో ఉన్నారు — మీ ప్రోగ్రెస్ ఈ పరికరంలో సురక్షితంగా సేవ్ చేయబడింది.",bn:"আপনি অফলাইনে আছেন — আপনার অগ্রগতি এই ডিভাইসে নিরাপদে সংরক্ষিত আছে।",kn:"ನೀವು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿರುವಿರಿ — ನಿಮ್ಮ ಪ್ರಗತಿಯನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಸುರಕ್ಷಿತವಾಗಿ ಉಳಿಸಲಾಗಿದೆ.",mr:"तुम्ही ऑफलाइन आहात — तुमची प्रगती या डिव्हाइसवर सुरक्षित आहे.",gu:"તમે ઓફલાઇન છો — તમારી પ્રગતિ આ ડિવાઇસ પર સુરક્ષિત છે.",pa:"ਤੁਸੀਂ ਆਫਲਾਈਨ ਹੋ — ਤੁਹਾਡੀ ਪ੍ਰਗਤੀ ਇਸ ਡਿਵਾਈਸ ਤੇ ਸੁਰੱਖਿਅਤ ਹੈ।",ml:"നിങ്ങൾ ഓഫ്‌ലൈനിലാണ് — നിങ്ങളുടെ പുരോഗതി ഈ ഡിവൈസിൽ സുരക്ഷിതമായി സംരക്ഷിച്ചിരിക്കുന്നു.",or:"ଆପଣ ଅଫଲାଇନ ଅଛନ୍ତି — ଆପଣଙ୍କ ପ୍ରଗତି ଏହି ଡିଭାଇସରେ ସୁରକ୍ଷିତ ଅଛି।",as:"আপুনি অফলাইন আছে — আপোনাৰ প্ৰগতি এই ডিভাইচত সুৰক্ষিতভাৱে সংৰক্ষিত আছে।",ur:"آپ آف لائن ہیں — آپ کی پیش رفت اس ڈیوائس پر محفوظ ہے۔"},
+  tabPlay:{en:"Play & Learn",hi:"खेलें और सीखें",ta:"விளையாடி கற்கவும்",te:"ఆడుతూ నేర్చుకోండి",bn:"খেলুন ও শিখুন",kn:"ಆಡಿ ಕಲಿಯಿರಿ",mr:"खेळा आणि शिका",gu:"રમો અને શીખો",pa:"ਖੇਡੋ ਅਤੇ ਸਿੱਖੋ",ml:"കളിച്ച് പഠിക്കുക",or:"ଖେଳ ଏବଂ ଶିଖ",as:"খেলক আৰু শিকক",ur:"کھیلیں اور سیکھیں"},
+  tabVideos:{en:"Lessons",hi:"पाठ",ta:"பாடங்கள்",te:"పాఠాలు",bn:"পাঠ",kn:"ಪಾಠಗಳು",mr:"धडे",gu:"પાઠ",pa:"ਪਾਠ",ml:"പാഠങ്ങൾ",or:"ପାଠ",as:"পাঠ",ur:"اسباق"},
+  tabRank:{en:"Ranking",hi:"रैंकिंग",ta:"தரவரிசை",te:"ర్యాంకింగ్",bn:"র্যাঙ্কিং",kn:"ರ್ಯಾಂಕಿಂಗ್",mr:"क्रमवारी",gu:"ક્રમ",pa:"ਦਰਜਾਬੰਦੀ",ml:"റാങ്കിംഗ്",or:"ର୍ୟାଙ୍କିଂ",as:"ৰেংকিং",ur:"درجہ بندی"},
+  tabProgress:{en:"My Progress",hi:"मेरी प्रगति",ta:"எனது முன்னேற்றம்",te:"నా ప్రోగ్రెస్",bn:"আমার অগ্রগতি",kn:"ನನ್ನ ಪ್ರಗತಿ",mr:"माझी प्रगती",gu:"મારી પ્રગતિ",pa:"ਮੇਰੀ ਪ੍ਰਗਤੀ",ml:"എന്റെ പുരോഗതി",or:"ମୋର ପ୍ରଗତି",as:"মোৰ প্ৰগতি",ur:"میری پیش رفت"},
+  statScore:{en:"Score",hi:"स्कोर",ta:"மதிப்பெண்",te:"స్కోర్",bn:"স্কোর",kn:"ಸ್ಕೋರ್",mr:"गुण",gu:"સ્કોર",pa:"ਸਕੋਰ",ml:"സ്കോർ",or:"ସ୍କୋର",as:"স্কোৰ",ur:"سکور"},
+  statStreak:{en:"Streak",hi:"लगातार सही",ta:"தொடர் வெற்றி",te:"స్ట్రీక్",bn:"স্ট্রিক",kn:"ಸ್ಟ್ರೀಕ್",mr:"सलग बरोबर",gu:"સ્ટ્રીક",pa:"ਸਟ੍ਰੀਕ",ml:"സ്ട്രീക്ക്",or:"ସ୍ଟ୍ରିକ",as:"ষ্ট্ৰিক",ur:"اسٹریک"},
+  statBadges:{en:"Badges",hi:"बैज",ta:"பேட்ஜ்கள்",te:"బ్యాడ్జీలు",bn:"ব্যাজ",kn:"ಬ್ಯಾಡ್ಜ್‌ಗಳು",mr:"बॅज",gu:"બેજ",pa:"ਬੈਜ",ml:"ബാഡ്ജുകൾ",or:"ବ୍ୟାଜ",as:"বেজ",ur:"بیجز"},
+  quizDoneTitle:{en:"Great work! 🎉",hi:"बहुत बढ़िया! 🎉",ta:"அருமை! 🎉",te:"గ్రేట్! 🎉",bn:"দারুণ কাজ! 🎉",kn:"ಅದ್ಭುತ! 🎉",mr:"उत्तम काम! 🎉",gu:"સરસ કામ! 🎉",pa:"ਬਹੁਤ ਵਧੀਆ! 🎉",ml:"നല്ല പണി! 🎉",or:"ବହୁତ ଭଲ! 🎉",as:"ভাল কাম! 🎉",ur:"بہت خوب! 🎉"},
+  btnPlayAgain:{en:"Play Again",hi:"फिर से खेलें",ta:"மீண்டும் விளையாடு",te:"మళ్ళీ ఆడండి",bn:"আবার খেলুন",kn:"ಮತ್ತೆ ಆಡಿ",mr:"पुन्हा खेळा",gu:"ફરી રમો",pa:"ਫਿਰ ਖੇਡੋ",ml:"വീണ്ടും കളിക്കുക",or:"ପୁଣି ଖେଳ",as:"আকৌ খেলক",ur:"دوبارہ کھیلیں"},
+  lessonsTitle:{en:"Lessons from your Teacher",hi:"आपके शिक्षक के पाठ",ta:"உங்கள் ஆசிரியரின் பாடங்கள்",te:"మీ ఉపాధ్యాయుని పాఠాలు",bn:"আপনার শিক্ষকের পাঠ",kn:"ನಿಮ್ಮ ಶಿಕ್ಷಕರ ಪಾಠಗಳು",mr:"तुमच्या शिक्षकांचे धडे",gu:"તમારા શિક્ષકના પાઠ",pa:"ਤੁਹਾਡੇ ਅਧਿਆਪਕ ਦੇ ਪਾਠ",ml:"നിങ്ങളുടെ അദ്ധ്യാപകന്റെ പാഠങ്ങൾ",or:"ତୁମ ଶିକ୍ଷକଙ୍କ ପାଠ",as:"আপোনাৰ শিক্ষকৰ পাঠ",ur:"آپ کے استاد کے اسباق"},
+  rankTitle:{en:"Class Ranking",hi:"कक्षा रैंकिंग",ta:"வகுப்பு தரவரிசை",te:"క్లాస్ ర్యాంకింగ్",bn:"শ্রেণী র্যাঙ্কিং",kn:"ತರಗತಿ ರ್ಯಾಂಕಿಂಗ್",mr:"वर्ग क्रमवारी",gu:"વર્ગ ક્રમ",pa:"ਕਲਾਸ ਦਰਜਾਬੰਦੀ",ml:"ക്ലാസ് റാങ്കിംഗ്",or:"ଶ୍ରେଣୀ ର୍ୟାଙ୍କିଂ",as:"শ্ৰেণী ৰেংকিং",ur:"کلاس درجہ بندی"},
+  progressTitle:{en:"My Progress",hi:"मेरी प्रगति",ta:"எனது முன்னேற்றம்",te:"నా ప్రోగ్రెస్",bn:"আমার অগ্রগতি",kn:"ನನ್ನ ಪ್ರಗತಿ",mr:"माझी प्रगती",gu:"મારી પ્રગતિ",pa:"ਮੇਰੀ ਪ੍ਰਗਤੀ",ml:"എന്റെ പുരോഗതി",or:"ମୋର ପ୍ରଗତି",as:"মোৰ প্ৰগতি",ur:"میری پیش رفت"},
+  colDate:{en:"Date",hi:"तारीख",ta:"தேதி",te:"తేదీ",bn:"তারিখ",kn:"ದಿನಾಂಕ",mr:"तारीख",gu:"તારીખ",pa:"ਮਿਤੀ",ml:"തീയതി",or:"ତାରିଖ",as:"তাৰিখ",ur:"تاریخ"},
+  colActivity:{en:"Activity",hi:"गतिविधि",ta:"செயல்பாடு",te:"కార్యకలాపం",bn:"কার্যকলাপ",kn:"ಚಟುವಟಿಕೆ",mr:"क्रियाकलाप",gu:"પ્રવૃત્તિ",pa:"ਸਰਗਰਮੀ",ml:"പ്രവർത്തനം",or:"କାର୍ଯ୍ୟକଳାପ",as:"কাৰ্যকলাপ",ur:"سرگرمی"},
+  colScore:{en:"Score",hi:"स्कोर",ta:"மதிப்பெண்",te:"స్కోర్",bn:"স্কোর",kn:"ಸ್ಕೋರ್",mr:"गुण",gu:"સ્કોર",pa:"ਸਕੋਰ",ml:"സ്കോർ",or:"ସ୍କୋର",as:"স্কোৰ",ur:"سکور"},
+  teacherDash:{en:"Teacher Dashboard",hi:"शिक्षक डैशबोर्ड",ta:"ஆசிரியர் டாஷ்போர்டு",te:"టీచర్ డాష్‌బోర్డ్",bn:"শিক্ষক ড্যাশবোর্ড",kn:"ಶಿಕ್ಷಕ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",mr:"शिक्षक डॅशबोर्ड",gu:"શિક્ષક ડેશબોર્ડ",pa:"ਅਧਿਆਪਕ ਡੈਸ਼ਬੋਰਡ",ml:"അദ്ധ്യാപക ഡാഷ്‌ബോർഡ്",or:"ଶିକ୍ଷକ ଡାସବୋର୍ଡ",as:"শিক্ষক ডেশবোর্ড",ur:"استاد ڈیش بورڈ"},
+  tTabOverview:{en:"Overview",hi:"अवलोकन",ta:"மேலோட்டம்",te:"ఓవర్‌వ్యూ",bn:"ওভারভিউ",kn:"ಓವರ್‌ವ್ಯೂ",mr:"आढावा",gu:"ઓવરવ્યૂ",pa:"ਜਾਣਕਾਰੀ",ml:"അവലോകനം",or:"ସମୀକ୍ଷା",as:"অভাৰভিউ",ur:"جائزہ"},
+  tTabAttendance:{en:"Attendance",hi:"उपस्थिति",ta:"வருகை",te:"హాజరు",bn:"উপস্থিতি",kn:"ಹಾಜರಾತಿ",mr:"उपस्थिती",gu:"હાજરી",pa:"ਹਾਜ਼ਰੀ",ml:"ഹാജർ",or:"ଉପସ୍ଥିତି",as:"উপস্থিতি",ur:"حاضری"},
+  tTabMarks:{en:"Marks & Tests",hi:"अंक और परीक्षा",ta:"மதிப்பெண்கள் & தேர்வுகள்",te:"మార్కులు & పరీక్షలు",bn:"নম্বর ও পরীক্ষা",kn:"ಅಂಕಗಳು & ಪರೀಕ್ಷೆಗಳು",mr:"गुण आणि चाचणी",gu:"માર્ક્સ અને ટેસ્ટ",pa:"ਅੰਕ ਅਤੇ ਟੈਸਟ",ml:"മാർക്കും ടെസ്റ്റും",or:"ମାର୍କ ଏବଂ ପରୀକ୍ଷା",as:"নম্বৰ আৰু পৰীক্ষা",ur:"نمبر اور ٹیسٹ"},
+  tTabAssignments:{en:"Assignments",hi:"असाइनमेंट",ta:"பணிகள்",te:"అసైన్‌మెంట్‌లు",bn:"অ্যাসাইনমেন্ট",kn:"ಅಸೈನ್‌ಮೆಂಟ್‌ಗಳು",mr:"असाइनमेंट",gu:"એસાઇનમેન્ટ",pa:"ਅਸਾਈਨਮੈਂਟ",ml:"അസൈൻമെന്റുകൾ",or:"ଆସାଇନମେଣ୍ଟ",as:"অ্যাছাইনমেণ্ট",ur:"اسائنمنٹس"},
+  tTabRanking:{en:"Ranking",hi:"रैंकिंग",ta:"தரவரிசை",te:"ర్యాంకింగ్",bn:"র্যাঙ্কিং",kn:"ರ್ಯಾಂಕಿಂಗ್",mr:"क्रमवारी",gu:"ક્રમ",pa:"ਦਰਜਾਬੰਦੀ",ml:"റാങ്കിംഗ്",or:"ର୍ୟାଙ୍କିଂ",as:"ৰেংকিং",ur:"درجہ بندی"},
+  tTabVideos:{en:"Videos",hi:"वीडियो",ta:"வீடியோக்கள்",te:"వీడియోలు",bn:"ভিডিও",kn:"ವೀಡಿಯೋಗಳು",mr:"व्हिडिओ",gu:"વિડિઓ",pa:"ਵੀਡੀਓ",ml:"വീഡിയോകൾ",or:"ଭିଡିଓ",as:"ভিডিঅ",ur:"ویڈیوز"},
+  tTabMail:{en:"Attendance Mail",hi:"उपस्थिति मेल",ta:"வருகை மெயில்",te:"హాజరు మెయిల్",bn:"উপস্থিতি মেইল",kn:"ಹಾಜರಾತಿ ಮೈಲ್",mr:"उपस्थिती मेल",gu:"હાજરી મેઇલ",pa:"ਹਾਜ਼ਰੀ ਮੇਲ",ml:"ഹാജർ മെയിൽ",or:"ଉପସ୍ଥିତି ମେଲ",as:"উপস্থিতি মেইল",ur:"حاضری میل"},
+  ovStudents:{en:"Students",hi:"छात्र",ta:"மாணவர்கள்",te:"విద్యార్థులు",bn:"ছাত্র",kn:"ವಿದ್ಯಾರ್ಥಿಗಳು",mr:"विद्यार्थी",gu:"વિદ્યાર્થીઓ",pa:"ਵਿਦਿਆਰਥੀ",ml:"വിദ്യാർത്ഥികൾ",or:"ଛାତ୍ର",as:"ছাত্ৰ",ur:"طلباء"},
+  ovPresentToday:{en:"Present Today",hi:"आज उपस्थित",ta:"இன்று வந்தவர்",te:"ఈరోజు హాజరు",bn:"আজ উপস্থিত",kn:"ಇಂದು ಹಾಜರು",mr:"आज उपस्थित",gu:"આજે હાજર",pa:"ਅੱਜ ਹਾਜ਼ਰ",ml:"ഇന്ന് ഹാജർ",or:"ଆଜି ଉପସ୍ଥିତ",as:"আজি উপস্থিত",ur:"آج حاضر"},
+  ovAvgScore:{en:"Avg. Score",hi:"औसत स्कोर",ta:"சராசரி மதிப்பெண்",te:"సగటు స్కోర్",bn:"গড় স্কোর",kn:"ಸರಾಸರಿ ಸ್ಕೋರ್",mr:"सरासरी गुण",gu:"સરેરાશ સ્કોર",pa:"ਔਸਤ ਸਕੋਰ",ml:"ശരാശരി സ്കോർ",or:"ହାରାହାରି ସ୍କୋର",as:"গড় স্কোৰ",ur:"اوسط سکور"},
+  ovAssignments:{en:"Assignments",hi:"असाइनमेंट",ta:"பணிகள்",te:"అసైన్‌మెంట్‌లు",bn:"অ্যাসাইনমেন্ট",kn:"ಅಸೈನ್‌ಮೆಂಟ್‌ಗಳು",mr:"असाइनमेंट",gu:"એસાઇનમેન્ટ",pa:"ਅਸਾਈਨਮੈਂਟ",ml:"അസൈൻമെന്റുകൾ",or:"ଆସାଇନମେଣ୍ଟ",as:"অ্যাছাইনমেণ্ট",ur:"اسائنمنٹس"},
+  ovTopStudents:{en:"Top Students",hi:"शीर्ष छात्र",ta:"முதன்மை மாணவர்கள்",te:"టాప్ స్టూడెంట్స్",bn:"শীর্ষ ছাত্র",kn:"ಟಾಪ್ ವಿದ್ಯಾರ್ಥಿಗಳು",mr:"अव्वल विद्यार्थी",gu:"ટોચના વિદ્યાર્થીઓ",pa:"ਚੋਟੀ ਦੇ ਵਿਦਿਆਰਥੀ",ml:"മികച്ച വിദ്യാർത്ഥികൾ",or:"ଶ୍ରେଷ୍ଠ ଛାତ୍ର",as:"শ্ৰেষ্ঠ ছাত্ৰ",ur:"بہترین طلباء"},
+  colRank:{en:"Rank",hi:"रैंक",ta:"தரம்",te:"ర్యాంక్",bn:"র্যাঙ্ক",kn:"ರ್ಯಾಂಕ್",mr:"क्रमांक",gu:"ક્રમ",pa:"ਦਰਜਾ",ml:"റാങ്ക്",or:"ର୍ୟାଙ୍କ",as:"ৰেংক",ur:"درجہ"},
+  colName:{en:"Name",hi:"नाम",ta:"பெயர்",te:"పేరు",bn:"নাম",kn:"ಹೆಸರು",mr:"नाव",gu:"નામ",pa:"ਨਾਮ",ml:"പേര്",or:"ନାମ",as:"নাম",ur:"نام"},
+  colClass:{en:"Class",hi:"कक्षा",ta:"வகுப்பு",te:"తరగతి",bn:"শ্রেণী",kn:"ತರಗತಿ",mr:"वर्ग",gu:"વર્ગ",pa:"ਕਲਾਸ",ml:"ക്ലാസ്",or:"ଶ୍ରେଣୀ",as:"শ্ৰেণী",ur:"کلاس"},
+  colStatus:{en:"Status",hi:"स्थिति",ta:"நிலை",te:"స్థితి",bn:"অবস্থা",kn:"ಸ್ಥಿತಿ",mr:"स्थिती",gu:"સ્થિતિ",pa:"ਸਥਿਤੀ",ml:"സ്ഥിതി",or:"ସ୍ଥିତି",as:"অবস্থা",ur:"حالت"},
+  colLoginTime:{en:"Login Time",hi:"लॉगिन समय",ta:"உள்நுழைவு நேரம்",te:"లాగిన్ సమయం",bn:"লগইন সময়",kn:"ಲಾಗಿನ್ ಸಮಯ",mr:"लॉगिन वेळ",gu:"લોગિન સમય",pa:"ਲਾਗਇਨ ਸਮਾਂ",ml:"ലോഗിൻ സമയം",or:"ଲଗଇନ ସମୟ",as:"লগইন সময়",ur:"لاگ ان وقت"},
+  colLogoutTime:{en:"Logout Time",hi:"लॉगआउट समय",ta:"வெளியேறும் நேரம்",te:"లాగౌట్ సమయం",bn:"লগআউট সময়",kn:"ಲಾಗ್ ಔಟ್ ಸಮಯ",mr:"लॉगआउट वेळ",gu:"લોગઆઉટ સમય",pa:"ਲਾਗਆਉਟ ਸਮਾਂ",ml:"ലോഗൗട്ട് സമയം",or:"ଲଗଆଉଟ ସମୟ",as:"লগআউট সময়",ur:"لاگ آؤٹ وقت"},
+  noRecords:{en:"No records yet.",hi:"अभी कोई रिकॉर्ड नहीं।",ta:"இன்னும் பதிவுகள் இல்லை.",te:"ఇంకా రికార్డులు లేవు.",bn:"এখনো কোনো রেকর্ড নেই।",kn:"ಇನ್ನೂ ದಾಖಲೆಗಳಿಲ್ಲ.",mr:"अजून नोंदी नाहीत.",gu:"હજુ સુધી કોઈ રેકોર્ડ નથી.",pa:"ਅਜੇ ਕੋਈ ਰਿਕਾਰਡ ਨਹੀਂ।",ml:"ഇതുവരെ രേഖകളൊന്നുമില്ല.",or:"ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ରେକର୍ଡ ନାହିଁ।",as:"এতিয়াও কোনো ৰেকর্ড নাই।",ur:"ابھی تک کوئی ریکارڈ نہیں۔"},
+  addTest:{en:"Record a Test / Mark",hi:"परीक्षा / अंक दर्ज करें",ta:"தேர்வு / மதிப்பெண் பதிவு",te:"పరీక్ష / మార్కు నమోదు చేయండి",bn:"পরীক্ষা / নম্বর রেকর্ড করুন",kn:"ಪರೀಕ್ಷೆ / ಅಂಕ ದಾಖಲಿಸಿ",mr:"चाचणी / गुण नोंदवा",gu:"ટેસ્ટ / માર્ક રેકોર્ડ કરો",pa:"ਟੈਸਟ / ਅੰਕ ਦਰਜ ਕਰੋ",ml:"ടെസ്റ്റ് / മാർക്ക് രേഖപ്പെടുത്തുക",or:"ପରୀକ୍ଷା / ମାର୍କ ରେକର୍ଡ କରନ୍ତୁ",as:"পৰীক্ষা / নম্বৰ ৰেকর্ড কৰক",ur:"ٹیسٹ / نمبر درج کریں"},
+  fieldStudent:{en:"Student",hi:"छात्र",ta:"மாணவர்",te:"విద్యార్థి",bn:"ছাত্র",kn:"ವಿದ್ಯಾರ್ಥಿ",mr:"विद्यार्थी",gu:"વિદ્યાર્થી",pa:"ਵਿਦਿਆਰਥੀ",ml:"വിദ്യാർത്ഥി",or:"ଛାତ୍ର",as:"ছাত্ৰ",ur:"طالب علم"},
+  fieldTestName:{en:"Test / Subject Name",hi:"परीक्षा / विषय का नाम",ta:"தேர்வு / பாட பெயர்",te:"టెస్ట్ / సబ్జెక్ట్ పేరు",bn:"পরীক্ষা / বিষয়ের নাম",kn:"ಪರೀಕ್ಷೆ / ವಿಷಯದ ಹೆಸರು",mr:"चाचणी / विषयाचे नाव",gu:"ટેસ્ટ / વિષયનું નામ",pa:"ਟੈਸਟ / ਵਿਸ਼ੇ ਦਾ ਨਾਮ",ml:"ടെസ്റ്റ് / വിഷയത്തിന്റെ പേര്",or:"ପରୀକ୍ଷା / ବିଷୟ ନାମ",as:"পৰীক্ষা / বিষয়ৰ নাম",ur:"ٹیسٹ / مضمون کا نام"},
+  fieldMarksObtained:{en:"Marks Obtained",hi:"प्राप्त अंक",ta:"பெற்ற மதிப்பெண்",te:"పొందిన మార్కులు",bn:"প্রাপ্ত নম্বর",kn:"ಪಡೆದ ಅಂಕಗಳು",mr:"मिळालेले गुण",gu:"મેળવેલા માર્ક્સ",pa:"ਪ੍ਰਾਪਤ ਅੰਕ",ml:"ലഭിച്ച മാർക്ക്",or:"ପ୍ରାପ୍ତ ମାର୍କ",as:"প্ৰাপ্ত নম্বৰ",ur:"حاصل شدہ نمبر"},
+  fieldMarksTotal:{en:"Out of",hi:"में से",ta:"இதில்",te:"ఇందులో",bn:"মধ্যে",kn:"ಇದರಲ್ಲಿ",mr:"यापैकी",gu:"માંથી",pa:"ਵਿੱਚੋਂ",ml:"ഇതിൽ",or:"ମଧ୍ୟରୁ",as:"ইয়াৰ ভিতৰত",ur:"میں سے"},
+  btnSave:{en:"Save",hi:"सहेजें",ta:"சேமி",te:"సేవ్ చేయండి",bn:"সংরক্ষণ করুন",kn:"ಉಳಿಸಿ",mr:"जतन करा",gu:"સાચવો",pa:"ਸੇਵ ਕਰੋ",ml:"സേവ് ചെയ്യുക",or:"ସେଭ କରନ୍ତୁ",as:"সংৰক্ষণ কৰক",ur:"محفوظ کریں"},
+  allMarks:{en:"All Recorded Marks",hi:"सभी दर्ज अंक",ta:"அனைத்து மதிப்பெண்கள்",te:"అన్ని నమోదైన మార్కులు",bn:"সমস্ত রেকর্ড করা নম্বর",kn:"ಎಲ್ಲಾ ಅಂಕಗಳು",mr:"सर्व नोंदवलेले गुण",gu:"તમામ રેકોર્ડ માર્ક્સ",pa:"ਸਾਰੇ ਦਰਜ ਅੰਕ",ml:"രേഖപ്പെടുത്തിയ എല്ലാ മാർക്കുകളും",or:"ସମସ୍ତ ରେକର୍ଡ ମାର୍କ",as:"সকলো ৰেকর্ড কৰা নম্বৰ",ur:"تمام درج شدہ نمبر"},
+  colTest:{en:"Test",hi:"परीक्षा",ta:"தேர்வு",te:"టెస్ట్",bn:"পরীক্ষা",kn:"ಪರೀಕ್ಷೆ",mr:"चाचणी",gu:"ટેસ્ટ",pa:"ਟੈਸਟ",ml:"ടെസ്റ്റ്",or:"ପରୀକ୍ଷା",as:"পৰীক্ষা",ur:"ٹیسٹ"},
+  colMarks:{en:"Marks",hi:"अंक",ta:"மதிப்பெண்",te:"మార్కులు",bn:"নম্বর",kn:"ಅಂಕಗಳು",mr:"गुण",gu:"માર્ક્સ",pa:"ਅੰਕ",ml:"മാർക്ക്",or:"ମାର୍କ",as:"নম্বৰ",ur:"نمبر"},
+  addAssignment:{en:"Create Assignment",hi:"असाइनमेंट बनाएं",ta:"பணி உருவாக்கு",te:"అసైన్‌మెంట్ సృష్టించండి",bn:"অ্যাসাইনমেন্ট তৈরি করুন",kn:"ಅಸೈನ್‌ಮೆಂಟ್ ರಚಿಸಿ",mr:"असाइनमेंट तयार करा",gu:"એસાઇનમેન્ટ બનાવો",pa:"ਅਸਾਈਨਮੈਂਟ ਬਣਾਓ",ml:"അസൈൻമെന്റ് സൃഷ്ടിക്കുക",or:"ଆସାଇନମେଣ୍ଟ ସୃଷ୍ଟି କରନ୍ତୁ",as:"অ্যাছাইনমেণ্ট সৃষ্টি কৰক",ur:"اسائنمنٹ بنائیں"},
+  fieldTitle:{en:"Title",hi:"शीर्षक",ta:"தலைப்பு",te:"టైటిల్",bn:"শিরোনাম",kn:"ಶೀರ್ಷಿಕೆ",mr:"शीर्षक",gu:"શીર્ષક",pa:"ਸਿਰਲੇਖ",ml:"ടൈറ്റിൽ",or:"ଶୀର୍ଷକ",as:"শিৰোনাম",ur:"عنوان"},
+  fieldDueDate:{en:"Due Date",hi:"देय तिथि",ta:"கடைசி தேதி",te:"గడువు తేదీ",bn:"শেষ তারিখ",kn:"ಗಡುವು ದಿನಾಂಕ",mr:"अंतिम तारीख",gu:"નિયત તારીખ",pa:"ਆਖਰੀ ਮਿਤੀ",ml:"അവസാന തീയതി",or:"ଅନ୍ତିମ ତାରିଖ",as:"শেষ তাৰিখ",ur:"آخری تاریخ"},
+  allClasses:{en:"All Classes",hi:"सभी कक्षाएं",ta:"அனைத்து வகுப்புகள்",te:"అన్ని తరగతులు",bn:"সকল শ্রেণী",kn:"ಎಲ್ಲಾ ತರಗತಿಗಳು",mr:"सर्व वर्ग",gu:"બધા વર્ગો",pa:"ਸਾਰੀਆਂ ਕਲਾਸਾਂ",ml:"എല്ലാ ക്ലാസുകളും",or:"ସମସ୍ତ ଶ୍ରେଣୀ",as:"সকলো শ্ৰেণী",ur:"تمام کلاسیں"},
+  allAssignments:{en:"All Assignments",hi:"सभी असाइनमेंट",ta:"அனைத்து பணிகள்",te:"అన్ని అసైన్‌మెంట్‌లు",bn:"সকল অ্যাসাইনমেন্ট",kn:"ಎಲ್ಲಾ ಅಸೈನ್‌ಮೆಂಟ್‌ಗಳು",mr:"सर्व असाइनमेंट",gu:"બધા એસાઇનમેન્ટ",pa:"ਸਾਰੇ ਅਸਾਈਨਮੈਂਟ",ml:"എല്ലാ അസൈൻമെന്റുകളും",or:"ସମସ୍ତ ଆସାଇନମେଣ୍ଟ",as:"সকলো অ্যাছাইনমেণ্ট",ur:"تمام اسائنمنٹس"},
+  colTitle:{en:"Title",hi:"शीर्षक",ta:"தலைப்பு",te:"టైటిల్",bn:"শিরোনাম",kn:"ಶೀರ್ಷಿಕೆ",mr:"शीर्षक",gu:"શીર્ષક",pa:"ਸਿਰਲੇਖ",ml:"ടൈറ്റിൽ",or:"ଶୀର୍ଷକ",as:"শিৰোনাম",ur:"عنوان"},
+  colDueDate:{en:"Due Date",hi:"देय तिथि",ta:"கடைசி தேதி",te:"గడువు తేదీ",bn:"শেষ তারিখ",kn:"ಗಡುವು ದಿನಾಂಕ",mr:"अंतिम तारीख",gu:"નિયત તારીખ",pa:"ਆਖਰੀ ਮਿਤੀ",ml:"അവസാന തീയതി",or:"ଅନ୍ତିମ ତାରିଖ",as:"শেষ তাৰিখ",ur:"آخری تاریخ"},
+  classRankingFull:{en:"Full Class Ranking",hi:"पूर्ण कक्षा रैंकिंग",ta:"முழு வகுப்பு தரவரிசை",te:"పూర్తి తరగతి ర్యాంకింగ్",bn:"সম্পূর্ণ শ্রেণী র্যাঙ্কিং",kn:"ಸಂಪೂರ್ಣ ತರಗತಿ ರ್ಯಾಂಕಿಂಗ್",mr:"संपूर्ण वर्ग क्रमवारी",gu:"સંપૂર્ણ વર્ગ ક્રમ",pa:"ਪੂਰੀ ਕਲਾਸ ਦਰਜਾਬੰਦੀ",ml:"പൂർണ്ണ ക്ലാസ് റാങ്കിംഗ്",or:"ସମ୍ପୂର୍ଣ୍ଣ ଶ୍ରେଣୀ ର୍ୟାଙ୍କିଂ",as:"সম্পূৰ্ণ শ্ৰেণী ৰেংকিং",ur:"مکمل کلاس درجہ بندی"},
+  uploadVideo:{en:"Add a Lesson Video (Teacher Only)",hi:"पाठ वीडियो जोड़ें (केवल शिक्षक)",ta:"பாட வீடியோ சேர் (ஆசிரியர் மட்டும்)",te:"పాఠం వీడియో జోడించండి (టీచర్ మాత్రమే)",bn:"পাঠ ভিডিও যুক্ত করুন (শুধু শিক্ষক)",kn:"ಪಾಠ ವೀಡಿಯೋ ಸೇರಿಸಿ (ಶಿಕ್ಷಕರಿಗೆ ಮಾತ್ರ)",mr:"धड्याचा व्हिडिओ जोडा (केवळ शिक्षक)",gu:"પાઠ વિડિઓ ઉમેરો (માત્ર શિક્ષક)",pa:"ਪਾਠ ਵੀਡੀਓ ਸ਼ਾਮਲ ਕਰੋ (ਸਿਰਫ਼ ਅਧਿਆਪਕ)",ml:"പാഠ വീഡിയോ ചേർക്കുക (അദ്ധ്യാപകർക്ക് മാത്രം)",or:"ପାଠ ଭିଡିଓ ଯୋଡନ୍ତୁ (କେବଳ ଶିକ୍ଷକ)",as:"পাঠ ভিডিঅ যোগ কৰক (কেৱল শিক্ষক)",ur:"سبق ویڈیو شامل کریں (صرف استاد)"},
+  videoNote:{en:"Paste a video link (YouTube, Vimeo, or any direct video URL). Students will see it under Lessons.",hi:"वीडियो लिंक पेस्ट करें (YouTube, Vimeo, या कोई भी सीधा वीडियो URL)। छात्र इसे पाठ में देखेंगे।",ta:"வீடியோ இணைப்பை ஒட்டவும் (YouTube, Vimeo, அல்லது நேரடி URL). மாணவர்கள் பாடங்களில் இதைக் காண்பார்கள்.",te:"వీడియో లింక్ పేస్ట్ చేయండి (YouTube, Vimeo, లేదా ఏదైనా URL). విద్యార్థులు దీన్ని పాఠాల్లో చూస్తారు.",bn:"একটি ভিডিও লিঙ্ক পেস্ট করুন (YouTube, Vimeo, বা সরাসরি URL)। ছাত্ররা এটি পাঠে দেখবে।",kn:"ವೀಡಿಯೋ ಲಿಂಕ್ ಅಂಟಿಸಿ (YouTube, Vimeo, ಅಥವಾ ಯಾವುದೇ URL). ವಿದ್ಯಾರ್ಥಿಗಳು ಇದನ್ನು ಪಾಠಗಳಲ್ಲಿ ನೋಡುತ್ತಾರೆ.",mr:"व्हिडिओ लिंक पेस्ट करा (YouTube, Vimeo, किंवा कोणताही URL). विद्यार्थ्यांना ते धड्यांत दिसेल.",gu:"વિડિઓ લિંક પેસ્ટ કરો (YouTube, Vimeo, અથવા કોઈપણ URL). વિદ્યાર્થીઓ તેને પાઠમાં જોશે.",pa:"ਵੀਡੀਓ ਲਿੰਕ ਪੇਸਟ ਕਰੋ (YouTube, Vimeo, ਜਾਂ ਕੋਈ URL)। ਵਿਦਿਆਰਥੀ ਇਸਨੂੰ ਪਾਠਾਂ ਵਿੱਚ ਦੇਖਣਗੇ।",ml:"വീഡിയോ ലിങ്ക് പേസ്റ്റ് ചെയ്യുക (YouTube, Vimeo, അല്ലെങ്കിൽ URL). വിദ്യാർത്ഥികൾ ഇത് പാഠങ്ങളിൽ കാണും.",or:"ଭିଡିଓ ଲିଙ୍କ ପେଷ୍ଟ କରନ୍ତୁ (YouTube, Vimeo, କିମ୍ବା URL)। ଛାତ୍ରମାନେ ଏହାକୁ ପାଠରେ ଦେଖିବେ।",as:"ভিডিঅ লিংক পেষ্ট কৰক (YouTube, Vimeo, বা URL)। শিক্ষাৰ্থীয়ে ইয়াক পাঠত দেখিব।",ur:"ویڈیو لنک پیسٹ کریں (یوٹیوب، ویمیو، یا کوئی بھی URL)۔ طلباء اسے اسباق میں دیکھیں گے۔"},
+  fieldVideoTitle:{en:"Video Title",hi:"वीडियो शीर्षक",ta:"வீடியோ தலைப்பு",te:"వీడియో టైటిల్",bn:"ভিডিও শিরোনাম",kn:"ವೀಡಿಯೋ ಶೀರ್ಷಿಕೆ",mr:"व्हिडिओ शीर्षक",gu:"વિડિઓ શીર્ષક",pa:"ਵੀਡੀਓ ਸਿਰਲੇਖ",ml:"വീഡിയോ ടൈറ്റിൽ",or:"ଭିଡିଓ ଶୀର୍ଷକ",as:"ভিডিঅ শিৰোনাম",ur:"ویڈیو کا عنوان"},
+  fieldVideoUrl:{en:"Video URL",hi:"वीडियो URL",ta:"வீடியோ URL",te:"వీడియో URL",bn:"ভিডিও URL",kn:"ವೀಡಿಯೋ URL",mr:"व्हिडिओ URL",gu:"વિડિઓ URL",pa:"ਵੀਡੀਓ URL",ml:"വീഡിയോ URL",or:"ଭିଡିଓ URL",as:"ভিডিঅ URL",ur:"ویڈیو یو آر ایل"},
+  btnAddVideo:{en:"Add Video",hi:"वीडियो जोड़ें",ta:"வீடியோ சேர்",te:"వీడియో జోడించండి",bn:"ভিডিও যুক্ত করুন",kn:"ವೀಡಿಯೋ ಸೇರಿಸಿ",mr:"व्हिडिओ जोडा",gu:"વિડિઓ ઉમેરો",pa:"ਵੀਡੀਓ ਸ਼ਾਮਲ ਕਰੋ",ml:"വീഡിയോ ചേർക്കുക",or:"ଭିଡିଓ ଯୋଡନ୍ତୁ",as:"ভিডিঅ যোগ কৰক",ur:"ویڈیو شامل کریں"},
+  allVideos:{en:"All Lesson Videos",hi:"सभी पाठ वीडियो",ta:"அனைத்து வீடியோக்கள்",te:"అన్ని వీడియోలు",bn:"সকল পাঠ ভিডিও",kn:"ಎಲ್ಲಾ ಪಾಠ ವೀಡಿಯೋಗಳು",mr:"सर्व धड्याचे व्हिडिओ",gu:"બધા પાઠ વિડિઓ",pa:"ਸਾਰੇ ਪਾਠ ਵੀਡੀਓ",ml:"എല്ലാ പാഠ വീഡിയോകളും",or:"ସମସ୍ତ ପାଠ ଭିଡିଓ",as:"সকলো পাঠ ভিডিঅ",ur:"تمام سبق ویڈیوز"},
+  mailTitle:{en:"Attendance Emails",hi:"उपस्थिति ईमेल",ta:"வருகை மின்னஞ்சல்",te:"హాజరు ఇమెయిల్స్",bn:"উপস্থিতি ইমেইল",kn:"ಹಾಜರಾತಿ ಇಮೇಲ್‌ಗಳು",mr:"उपस्थिती ईमेल",gu:"હાજરી ઈમેલ",pa:"ਹਾਜ਼ਰੀ ਈਮੇਲ",ml:"ഹാജർ ഇമെയിലുകൾ",or:"ଉପସ୍ଥିତି ଇମେଲ",as:"উপস্থিতি ইমেইল",ur:"حاضری ای میل"},
+  mailExplain:{en:"This app works fully offline and has no mail server, so it cannot send email by itself. Each row below is a ready-made attendance message — click \"Send Email\" to open it in your phone or computer's email app, addressed to the student (and you as teacher can CC yourself).",hi:"यह ऐप पूरी तरह ऑफ़लाइन काम करता है और इसमें कोई मेल सर्वर नहीं है, इसलिए यह स्वयं ईमेल नहीं भेज सकता। नीचे प्रत्येक पंक्ति एक तैयार उपस्थिति संदेश है — अपने फ़ोन या कंप्यूटर के ईमेल ऐप में खोलने के लिए \"Send Email\" पर क्लिक करें।",ta:"இந்த ஆப் முழுவதும் ஆஃப்லைனில் வேலை செய்கிறது, மெயில் சர்வர் இல்லை, எனவே தானாக மெயில் அனுப்ப முடியாது. கீழே உள்ள ஒவ்வொரு வரியும் தயார் செய்யப்பட்ட வருகை செய்தி — \"Send Email\" கிளிக் செய்யவும்.",te:"ఈ యాప్ పూర్తిగా ఆఫ్‌లైన్‌లో పనిచేస్తుంది, మెయిల్ సర్వర్ లేదు, కాబట్టి స్వయంగా ఇమెయిల్ పంపలేరు. దిగువ ఉన్న ప్రతి వరుస సిద్ధంగా ఉన్న హాజరు సందేశం — \"Send Email\" క్లిక్ చేయండి.",bn:"এই অ্যাপ সম্পূর্ণ অফলাইনে কাজ করে এবং কোনো মেইল সার্ভার নেই, তাই এটি নিজে ইমেইল পাঠাতে পারে না। নিচের প্রতিটি সারি একটি তৈরি উপস্থিতি বার্তা — \"Send Email\" ক্লিক করুন।",kn:"ಈ ಆಪ್ ಸಂಪೂರ್ಣ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಕೆಲಸ ಮಾಡುತ್ತದೆ, ಮೈಲ್ ಸರ್ವರ್ ಇಲ್ಲ, ಆದ್ದರಿಂದ ಸ್ವತಃ ಇಮೇಲ್ ಕಳುಹಿಸಲಾಗುವುದಿಲ್ಲ. ಕೆಳಗಿನ ಪ್ರತಿ ಸಾಲು ತಯಾರಾದ ಹಾಜರಾತಿ ಸಂದೇಶ — \"Send Email\" ಕ್ಲಿಕ್ ಮಾಡಿ.",mr:"हे अॅप संपूर्ण ऑफलाइन काम करते आणि मेल सर्व्हर नाही, त्यामुळे स्वतः ईमेल पाठवू शकत नाही. खालील प्रत्येक ओळ तयार उपस्थिती संदेश आहे — \"Send Email\" क्लिक करा.",gu:"આ એપ સંપૂર્ણપણે ઓફલાઇન કામ કરે છે અને તેમાં મેઇલ સર્વર નથી, તેથી તે જાતે ઈમેલ મોકલી શકતું નથી. નીચેની દરેક પંક્તિ તૈયાર હાજરી સંદેશ છે — \"Send Email\" ક્લિક કરો.",pa:"ਇਹ ਐਪ ਪੂਰੀ ਤਰ੍ਹਾਂ ਆਫਲਾਈਨ ਕੰਮ ਕਰਦੀ ਹੈ ਅਤੇ ਇਸ ਵਿੱਚ ਮੇਲ ਸਰਵਰ ਨਹੀਂ ਹੈ, ਇਸ ਲਈ ਇਹ ਖੁਦ ਈਮੇਲ ਨਹੀਂ ਭੇਜ ਸਕਦੀ। ਹੇਠਾਂ ਹਰ ਕਤਾਰ ਇੱਕ ਤਿਆਰ ਹਾਜ਼ਰੀ ਸੁਨੇਹਾ ਹੈ — \"Send Email\" ਤੇ ਕਲਿੱਕ ਕਰੋ।",ml:"ഈ ആപ്പ് പൂർണ്ണമായും ഓഫ്‌ലൈനായി പ്രവർത്തിക്കുന്നു, മെയിൽ സെർവർ ഇല്ല, അതിനാൽ സ്വയം ഇമെയിൽ അയയ്ക്കാൻ കഴിയില്ല. ചുവടെയുള്ള ഓരോ വരിയും തയ്യാറായ ഹാജർ സന്ദേശമാണ് — \"Send Email\" ക്ലിക്ക് ചെയ്യുക.",or:"ଏହି ଆପ୍ ସମ୍ପୂର୍ଣ୍ଣ ଅଫଲାଇନରେ କାମ କରେ ଏବଂ ମେଲ ସର୍ଭର ନାହିଁ, ତେଣୁ ଏହା ଆପେ ଇମେଲ ପଠାଇ ପାରିବ ନାହିଁ। ତଳର ପ୍ରତ୍ୟେକ ଧାଡି ଏକ ତୟାର ଉପସ୍ଥିତି ସମ୍ବାଦ — \"Send Email\" କ୍ଲିକ କରନ୍ତୁ।",as:"এই এপটো সম্পূর্ণ অফলাইনত কাম কৰে আৰু মেইল চাৰ্ভাৰ নাই, সেইবাবে ই নিজে ইমেইল পাঠাব নোৱাৰে। তলৰ প্ৰতিটো শাৰী এটা সাজু কৰা উপস্থিতি বাৰ্তা — \"Send Email\" ক্লিক কৰক।",ur:"یہ ایپ مکمل طور پر آف لائن کام کرتی ہے اور اس میں میل سرور نہیں ہے، اس لیے یہ خود ای میل نہیں بھیج سکتی۔ نیچے ہر قطار ایک تیار حاضری پیغام ہے — \"Send Email\" پر کلک کریں۔"},
+  colAction:{en:"Action",hi:"कार्रवाई",ta:"செயல்",te:"చర్య",bn:"কার্যকলাপ",kn:"ಕ್ರಿಯೆ",mr:"क्रिया",gu:"ક્રિયા",pa:"ਕਾਰਵਾਈ",ml:"പ്രവർത്തനം",or:"କାର୍ଯ୍ୟ",as:"কাৰ্য",ur:"عمل"},
+  teacherEmailSetup:{en:"Your Email (for CC / records)",hi:"आपका ईमेल (सीसी / रिकॉर्ड के लिए)",ta:"உங்கள் மின்னஞ்சல் (CC / பதிவுகளுக்கு)",te:"మీ ఇమెయిల్ (CC / రికార్డుల కోసం)",bn:"আপনার ইমেইল (সিসি / রেকর্ডের জন্য)",kn:"ನಿಮ್ಮ ಇಮೇಲ್ (CC / ದಾಖಲೆಗಳಿಗಾಗಿ)",mr:"तुमचा ईमेल (CC / नोंदींसाठी)",gu:"તમારો ઈમેલ (CC / રેકોર્ડ માટે)",pa:"ਤੁਹਾਡੀ ਈਮੇਲ (CC / ਰਿਕਾਰਡ ਲਈ)",ml:"നിന്റെ ഇമെയിൽ (CC / രേഖകൾക്ക്)",or:"ତୁମର ଇମେଲ (CC / ରେକର୍ଡ ପାଇଁ)",as:"আপোনাৰ ইমেইল (CC / ৰেকর্ডৰ বাবে)",ur:"آپ کا ای میل (سی سی / ریکارڈ کے لیے)"},
+  attToday:{en:"Today's Attendance Log",hi:"आज का उपस्थिति लॉग",ta:"இன்றைய வருகை பதிவு",te:"నేటి హాజరు లాగ్",bn:"আজকের উপস্থিতি লগ",kn:"ಇಂದಿನ ಹಾಜರಾತಿ ಲಾಗ್",mr:"आजचा उपस्थिती लॉग",gu:"આજનો હાજરી લોગ",pa:"ਅੱਜ ਦਾ ਹਾਜ਼ਰੀ ਲੌਗ",ml:"ഇന്നത്തെ ഹാജർ ലോഗ്",or:"ଆଜିର ଉପସ୍ଥିତି ଲଗ",as:"আজিৰ উপস্থিতি লগ",ur:"آج کا حاضری لاگ"}
+};
+
+let currentLang = localStorage.getItem('gv_lang') || 'en';
+
+function t(key){
+  const e = STRINGS[key];
+  if(!e) return key;
+  return e[currentLang] || e.en || key;
+}
+function applyTranslations(){
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir = (currentLang==='ur'||currentLang==='ks'||currentLang==='sd') ? 'rtl' : 'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(STRINGS[key]) el.innerHTML = t(key);
+  });
+  renderAll();
+}
+
+/* populate language dropdown */
+const globalLangSelect = document.getElementById('globalLangSelect');
+Object.keys(LANGS).forEach(code=>{
+  const opt = document.createElement('option');
+  opt.value = code; opt.textContent = LANGS[code].name;
+  if(code===currentLang) opt.selected = true;
+  globalLangSelect.appendChild(opt);
+});
+globalLangSelect.addEventListener('change', e=>{
+  currentLang = e.target.value;
+  localStorage.setItem('gv_lang', currentLang);
+  applyTranslations();
+});
+
+/* =========================================================================
+   DATA LAYER (localStorage-based, offline-first)
+   ========================================================================= */
+const DB_KEY = 'gv_database_v1';
+function loadDB(){
+  try{
+    const raw = localStorage.getItem(DB_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {
+    students:{},      // id -> {name, class, score, streak, badges:[], history:[]}
+    attendance:[],    // {studentId,name,class,date,status,loginTime,logoutTime}
+    marks:[],         // {studentId,name,testName,obtained,total,date}
+    assignments:[],   // {title,due,class}
+    videos:[],        // {title,url,class}
+    teacherEmail:''
+  };
+}
+let DB = loadDB();
+function saveDB(){
+  try{ localStorage.setItem(DB_KEY, JSON.stringify(DB)); }catch(e){}
+}
+
+function studentId(name, cls){ return (name.trim().toLowerCase()+'_'+cls).replace(/\s+/g,'_'); }
+
+/* seed a couple of demo students/marks so dashboard isn't empty on first run */
+if(Object.keys(DB.students).length === 0){
+  const demo = [
+    {name:'Asha', cls:'5', score:340, streak:4},
+    {name:'Ravi', cls:'5', score:280, streak:2},
+    {name:'Meena', cls:'5', score:410, streak:6}
+  ];
+  demo.forEach(d=>{
+    const id = studentId(d.name, d.cls);
+    DB.students[id] = {name:d.name, class:d.cls, score:d.score, streak:d.streak, badges:['🌱'], history:[]};
+  });
+  saveDB();
+}
+
+/* =========================================================================
+   QUIZ CONTENT (sample subject: general knowledge / math mix)
+   ========================================================================= */
+const QUIZ_BANK = [
+  {q:{en:"What is 7 + 8?",hi:"7 + 8 कितना होता है?",ta:"7 + 8 என்றால் என்ன?",te:"7 + 8 ఎంత?",bn:"৭ + ৮ কত?"}, opts:["13","15","17","16"], answer:1},
+  {q:{en:"Which is the largest planet?",hi:"सबसे बड़ा ग्रह कौन सा है?",ta:"மிகப் பெரிய கிரகம் எது?",te:"అతిపెద్ద గ్రహం ఏది?",bn:"সবচেয়ে বড় গ্রহ কোনটি?"}, opts:["Earth","Jupiter","Mars","Venus"], answer:1},
+  {q:{en:"What is 9 x 3?",hi:"9 x 3 कितना होता है?",ta:"9 x 3 என்றால் என்ன?",te:"9 x 3 ఎంత?",bn:"৯ x ৩ কত?"}, opts:["27","24","21","30"], answer:0},
+  {q:{en:"Which gas do plants absorb?",hi:"पौधे कौन सी गैस अवशोषित करते हैं?",ta:"தாவரங்கள் எந்த வாயுவை உறிஞ்சும்?",te:"మొక్కలు ఏ వాయువును పీల్చుకుంటాయి?",bn:"গাছ কোন গ্যাস শোষণ করে?"}, opts:["Oxygen","Nitrogen","Carbon Dioxide","Hydrogen"], answer:2},
+  {q:{en:"What is the capital of India?",hi:"भारत की राजधानी क्या है?",ta:"இந்தியாவின் தலைநகரம் என்ன?",te:"భారతదేశ రాజధాని ఏది?",bn:"ভারতের রাজধানী কী?"}, opts:["Mumbai","New Delhi","Kolkata","Chennai"], answer:1}
+];
+
+/* =========================================================================
+   STATE
+   ========================================================================= */
+let session = { role:null, name:null, cls:null, studentId:null };
+let quizState = { idx:0, score:0, total:QUIZ_BANK.length, correctStreak:0 };
+
+/* =========================================================================
+   LOGIN SCREEN LOGIC
+   ========================================================================= */
+const roleStudentBtn = document.getElementById('roleStudentBtn');
+const roleTeacherBtn = document.getElementById('roleTeacherBtn');
+const classFieldWrap = document.getElementById('classFieldWrap');
+const passFieldWrap = document.getElementById('passFieldWrap');
+let selectedRole = 'student';
+
+roleStudentBtn.addEventListener('click', ()=>{
+  selectedRole='student';
+  roleStudentBtn.classList.add('active'); roleTeacherBtn.classList.remove('active');
+  classFieldWrap.classList.remove('hidden'); passFieldWrap.classList.add('hidden');
+  document.getElementById('loginError').textContent='';
+});
+roleTeacherBtn.addEventListener('click', ()=>{
+  selectedRole='teacher';
+  roleTeacherBtn.classList.add('active'); roleStudentBtn.classList.remove('active');
+  classFieldWrap.classList.add('hidden'); passFieldWrap.classList.remove('hidden');
+  document.getElementById('loginError').textContent='';
+});
+
+document.getElementById('loginSubmitBtn').addEventListener('click', ()=>{
+  const name = document.getElementById('loginName').value.trim();
+  const errEl = document.getElementById('loginError');
+  errEl.textContent='';
+  if(!name){ errEl.textContent = currentLang==='hi' ? 'कृपया अपना नाम लिखें' : 'Please enter your name'; return; }
+
+  if(selectedRole === 'teacher'){
+    const pass = document.getElementById('loginPass').value;
+    if(pass !== 'teacher123'){
+      errEl.textContent = currentLang==='hi' ? 'गलत पासवर्ड' : 'Incorrect password';
+      return;
+    }
+    session = {role:'teacher', name, cls:null, studentId:null};
+    showTeacherApp();
+  } else {
+    const cls = document.getElementById('loginClass').value;
+    const id = studentId(name, cls);
+    if(!DB.students[id]){
+      DB.students[id] = {name, class:cls, score:0, streak:0, badges:[], history:[]};
+    }
+    session = {role:'student', name, cls, studentId:id};
+    logAttendance(id, name, cls, 'present', true);
+    saveDB();
+    showStudentApp();
+  }
+});
+
+/* =========================================================================
+   ATTENDANCE LOGGING
+   ========================================================================= */
+function nowTimeStr(){
+  return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+}
+function todayStr(){
+  return new Date().toLocaleDateString();
+}
+function logAttendance(id, name, cls, status, isLogin){
+  const today = todayStr();
+  let rec = DB.attendance.find(a => a.studentId===id && a.date===today);
+  if(!rec){
+    rec = {studentId:id, name, class:cls, date:today, status, loginTime:'', logoutTime:''};
+    DB.attendance.push(rec);
+  }
+  if(isLogin && !rec.loginTime) rec.loginTime = nowTimeStr();
+  rec.status = status;
+  saveDB();
+}
+function logLogout(id){
+  const today = todayStr();
+  const rec = DB.attendance.find(a => a.studentId===id && a.date===today);
+  if(rec){ rec.logoutTime = nowTimeStr(); saveDB(); }
+}
+
+/* =========================================================================
+   STUDENT APP
+   ========================================================================= */
+function showStudentApp(){
+  document.getElementById('screen-login').classList.add('hidden');
+  document.getElementById('screen-teacher').classList.add('hidden');
+  document.getElementById('screen-student').classList.remove('hidden');
+  document.getElementById('studentGreeting').textContent = (currentLang==='hi'?'नमस्ते, ':'Hello, ') + session.name + '!';
+  document.getElementById('studentMeta').textContent = (currentLang==='hi'?'कक्षा ':'Class ') + session.cls;
+  resetQuiz();
+  renderStudentTabs('play');
+  renderAll();
+  updateOfflineBanner();
+}
+window.addEventListener('online', updateOfflineBanner);
+window.addEventListener('offline', updateOfflineBanner);
+function updateOfflineBanner(){
+  const banner = document.getElementById('offlineBanner');
+  if(!navigator.onLine){ banner.classList.remove('hidden'); } else { banner.classList.add('hidden'); }
+}
+
+document.querySelectorAll('.tabbar button').forEach(btn=>{
+  btn.addEventListener('click', ()=> renderStudentTabs(btn.dataset.stab));
+});
+function renderStudentTabs(tab){
+  document.querySelectorAll('.tabbar button').forEach(b=> b.classList.toggle('active', b.dataset.stab===tab));
+  ['play','videos','rank','progress'].forEach(name=>{
+    document.getElementById('stab-'+name).classList.toggle('hidden', name!==tab);
+  });
+  if(tab==='videos') renderStudentVideos();
+  if(tab==='rank') renderStudentRank();
+  if(tab==='progress') renderStudentProgress();
+}
+
+document.getElementById('studentLogoutBtn').addEventListener('click', ()=>{
+  if(session.studentId) logLogout(session.studentId);
+  goToLogin();
+});
+
+/* --- Quiz --- */
+function resetQuiz(){
+  quizState = {idx:0, score:0, total:QUIZ_BANK.length, correctStreak:0};
+  document.getElementById('quizCard').classList.remove('hidden');
+  document.getElementById('quizDoneCard').classList.add('hidden');
+  renderQuizQuestion();
+}
+function renderQuizQuestion(){
+  const item = QUIZ_BANK[quizState.idx % QUIZ_BANK.length];
+  const qText = item.q[currentLang] || item.q.en;
+  document.getElementById('quizQuestion').textContent = qText;
+  document.getElementById('quizProgressFill').style.width = (quizState.idx/quizState.total*100)+'%';
+  const optsWrap = document.getElementById('quizOptions');
+  optsWrap.innerHTML='';
+  item.opts.forEach((opt, i)=>{
+    const b = document.createElement('button');
+    b.className='opt-btn';
+    b.textContent = opt;
+    b.addEventListener('click', ()=> handleQuizAnswer(i, item, b));
+    optsWrap.appendChild(b);
+  });
+}
+function handleQuizAnswer(i, item, btnEl){
+  const allBtns = document.querySelectorAll('#quizOptions .opt-btn');
+  allBtns.forEach(b=> b.disabled = true);
+  if(i === item.answer){
+    btnEl.classList.add('correct');
+    quizState.score += 10;
+    quizState.correctStreak += 1;
+  } else {
+    btnEl.classList.add('wrong');
+    allBtns[item.answer].classList.add('correct');
+    quizState.correctStreak = 0;
+  }
+  setTimeout(()=>{
+    quizState.idx += 1;
+    if(quizState.idx >= quizState.total){
+      finishQuiz();
+    } else {
+      renderQuizQuestion();
+    }
+  }, 700);
+}
+function finishQuiz(){
+  document.getElementById('quizCard').classList.add('hidden');
+  const doneCard = document.getElementById('quizDoneCard');
+  doneCard.classList.remove('hidden');
+  document.getElementById('quizDoneSummary').textContent =
+    (currentLang==='hi' ? 'आपने अर्जित किया: ' : 'You earned: ') + quizState.score + (currentLang==='hi'?' अंक':' points');
+
+  const st = DB.students[session.studentId];
+  st.score += quizState.score;
+  st.streak = Math.max(st.streak, quizState.correctStreak);
+  const earnedBadges = [];
+  if(quizState.score >= 40 && !st.badges.includes('🏆')){ st.badges.push('🏆'); earnedBadges.push('🏆'); }
+  if(quizState.correctStreak >= 4 && !st.badges.includes('🔥')){ st.badges.push('🔥'); earnedBadges.push('🔥'); }
+  if(!st.badges.includes('🌱')){ st.badges.push('🌱'); earnedBadges.push('🌱'); }
+  st.history.push({date:todayStr(), activity: currentLang==='hi'?'प्रश्नोत्तरी':'Quiz', score:quizState.score});
+  saveDB();
+
+  const badgeRow = document.getElementById('quizDoneBadges');
+  badgeRow.innerHTML='';
+  st.badges.forEach(b=>{
+    const span = document.createElement('span'); span.className='badge'; span.textContent=b;
+    badgeRow.appendChild(span);
+  });
+  renderAll();
+}
+document.getElementById('quizReplayBtn').addEventListener('click', resetQuiz);
+
+/* --- Student videos --- */
+function renderStudentVideos(){
+  const list = document.getElementById('studentVideoList');
+  list.innerHTML='';
+  const relevant = DB.videos.filter(v => v.class==='all' || v.class===session.cls);
+  if(relevant.length===0){
+    list.innerHTML = '<div class="empty-state">'+t('noRecords')+'</div>';
+    return;
+  }
+  relevant.forEach(v=>{
+    const div = document.createElement('div');
+    div.className='video-item';
+    div.innerHTML = `<div class="thumb">▶</div><div><a href="${escapeAttr(v.url)}" target="_blank" rel="noopener">${escapeHtml(v.title)}</a><div class="desc">${currentLang==='hi'?'कक्षा':'Class'} ${v.class==='all' ? (currentLang==='hi'?'सभी':'All') : v.class}</div></div>`;
+    list.appendChild(div);
+  });
+}
+
+/* --- Student rank --- */
+function renderStudentRank(){
+  const list = document.getElementById('rankList');
+  list.innerHTML='';
+  const sameClass = Object.values(DB.students).filter(s=>s.class===session.cls).sort((a,b)=>b.score-a.score);
+  sameClass.forEach((s,i)=>{
+    const li = document.createElement('li');
+    if(s.name===session.name) li.classList.add('me');
+    li.innerHTML = `<span class="pos">#${i+1}</span><span>${escapeHtml(s.name)}</span><span>${s.score}</span>`;
+    list.appendChild(li);
+  });
+}
+
+/* --- Student progress --- */
+function renderStudentProgress(){
+  const body = document.getElementById('progressTableBody');
+  body.innerHTML='';
+  const st = DB.students[session.studentId];
+  if(!st || st.history.length===0){
+    body.innerHTML = `<tr><td colspan="3" class="empty-state">${t('noRecords')}</td></tr>`;
+    return;
+  }
+  st.history.slice().reverse().forEach(h=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${h.date}</td><td>${h.activity}</td><td>${h.score}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+/* =========================================================================
+   TEACHER APP
+   ========================================================================= */
+function showTeacherApp(){
+  document.getElementById('screen-login').classList.add('hidden');
+  document.getElementById('screen-student').classList.add('hidden');
+  document.getElementById('screen-teacher').classList.remove('hidden');
+  document.getElementById('teacherName').textContent = session.name;
+  document.getElementById('teacherEmailInput').value = DB.teacherEmail || '';
+  renderTeacherTabs('overview');
+  renderAll();
+}
+document.querySelectorAll('.t-tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=> renderTeacherTabs(btn.dataset.ttab));
+});
+function renderTeacherTabs(tab){
+  document.querySelectorAll('.t-tabs button').forEach(b=> b.classList.toggle('active', b.dataset.ttab===tab));
+  ['overview','attendance','marks','assignments','ranking','videos','mail'].forEach(name=>{
+    document.getElementById('ttab-'+name).classList.toggle('hidden', name!==tab);
+  });
+}
+document.getElementById('teacherLogoutBtn').addEventListener('click', goToLogin);
+
+function goToLogin(){
+  session = {role:null,name:null,cls:null,studentId:null};
+  document.getElementById('screen-student').classList.add('hidden');
+  document.getElementById('screen-teacher').classList.add('hidden');
+  document.getElementById('screen-login').classList.remove('hidden');
+  document.getElementById('loginName').value='';
+  document.getElementById('loginPass').value='';
+  document.getElementById('loginError').textContent='';
+}
+
+/* --- Teacher: Overview --- */
+function renderTeacherOverview(){
+  const students = Object.values(DB.students);
+  document.getElementById('ovStudents').textContent = students.length;
+  const today = todayStr();
+  const presentToday = DB.attendance.filter(a=>a.date===today && a.status==='present').length;
+  document.getElementById('ovPresentToday').textContent = presentToday;
+  const avg = students.length ? Math.round(students.reduce((s,x)=>s+x.score,0)/students.length) : 0;
+  document.getElementById('ovAvgScore').textContent = avg;
+  document.getElementById('ovAssignments').textContent = DB.assignments.length;
+
+  const top = students.slice().sort((a,b)=>b.score-a.score).slice(0,5);
+  const body = document.getElementById('ovTopTable');
+  body.innerHTML='';
+  if(top.length===0){ body.innerHTML = `<tr><td colspan="4" class="empty-state">${t('noRecords')}</td></tr>`; return; }
+  top.forEach((s,i)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>#${i+1}</td><td>${escapeHtml(s.name)}</td><td>${s.class}</td><td>${s.score}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+/* --- Teacher: Attendance --- */
+function renderTeacherAttendance(){
+  const body = document.getElementById('attendanceTableBody');
+  const empty = document.getElementById('attendanceEmpty');
+  body.innerHTML='';
+  const today = todayStr();
+  const todays = DB.attendance.filter(a=>a.date===today);
+  empty.classList.toggle('hidden', todays.length>0);
+  todays.forEach(a=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${escapeHtml(a.name)}</td><td>${a.class}</td>
+      <td><span class="pill ${a.status==='present'?'present':'absent'}">${a.status==='present' ? (currentLang==='hi'?'उपस्थित':'Present') : (currentLang==='hi'?'अनुपस्थित':'Absent')}</span></td>
+      <td>${a.loginTime||'—'}</td><td>${a.logoutTime||'—'}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+/* --- Teacher: Marks --- */
+function populateStudentSelect(){
+  const sel = document.getElementById('markStudentSelect');
+  sel.innerHTML='';
+  Object.entries(DB.students).forEach(([id,s])=>{
+    const opt = document.createElement('option');
+    opt.value=id; opt.textContent = `${s.name} (${currentLang==='hi'?'कक्षा':'Class'} ${s.class})`;
+    sel.appendChild(opt);
+  });
+}
+document.getElementById('addMarkBtn').addEventListener('click', ()=>{
+  const id = document.getElementById('markStudentSelect').value;
+  const testName = document.getElementById('markTestName').value.trim();
+  const obtained = parseFloat(document.getElementById('markObtained').value);
+  const total = parseFloat(document.getElementById('markTotal').value) || 100;
+  if(!id || !testName || isNaN(obtained)) return;
+  const st = DB.students[id];
+  DB.marks.push({studentId:id, name:st.name, testName, obtained, total, date:todayStr()});
+  st.score += Math.round((obtained/total)*20);
+  st.history.push({date:todayStr(), activity:testName, score:obtained});
+  saveDB();
+  document.getElementById('markTestName').value='';
+  document.getElementById('markObtained').value='';
+  renderAll();
+});
+function renderTeacherMarks(){
+  const body = document.getElementById('marksTableBody');
+  const empty = document.getElementById('marksEmpty');
+  body.innerHTML='';
+  empty.classList.toggle('hidden', DB.marks.length>0);
+  DB.marks.slice().reverse().forEach(m=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${escapeHtml(m.name)}</td><td>${escapeHtml(m.testName)}</td><td>${m.obtained}/${m.total}</td><td>${m.date}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+/* --- Teacher: Assignments --- */
+document.getElementById('addAssignBtn').addEventListener('click', ()=>{
+  const title = document.getElementById('assignTitle').value.trim();
+  const due = document.getElementById('assignDue').value;
+  const cls = document.getElementById('assignClass').value;
+  if(!title) return;
+  DB.assignments.push({title, due, class:cls});
+  saveDB();
+  document.getElementById('assignTitle').value='';
+  document.getElementById('assignDue').value='';
+  renderAll();
+});
+function renderTeacherAssignments(){
+  const body = document.getElementById('assignmentsTableBody');
+  const empty = document.getElementById('assignEmpty');
+  body.innerHTML='';
+  empty.classList.toggle('hidden', DB.assignments.length>0);
+  DB.assignments.slice().reverse().forEach(a=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${escapeHtml(a.title)}</td><td>${a.class==='all'?t('allClasses'):a.class}</td><td>${a.due||'—'}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+/* --- Teacher: Ranking --- */
+function renderTeacherRanking(){
+  const body = document.getElementById('teacherRankTableBody');
+  body.innerHTML='';
+  const sorted = Object.values(DB.students).sort((a,b)=>b.score-a.score);
+  if(sorted.length===0){ body.innerHTML = `<tr><td colspan="4" class="empty-state">${t('noRecords')}</td></tr>`; return; }
+  sorted.forEach((s,i)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>#${i+1}</td><td>${escapeHtml(s.name)}</td><td>${s.class}</td><td>${s.score}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+/* --- Teacher: Videos (teacher-only upload) --- */
+document.getElementById('addVideoBtn').addEventListener('click', ()=>{
+  const title = document.getElementById('videoTitle').value.trim();
+  const url = document.getElementById('videoUrl').value.trim();
+  const cls = document.getElementById('videoClass').value;
+  if(!title || !url) return;
+  if(!/^https?:\/\//i.test(url)){ alert(currentLang==='hi'?'कृपया मान्य URL दर्ज करें (http/https)':'Please enter a valid URL (http/https)'); return; }
+  DB.videos.push({title, url, class:cls});
+  saveDB();
+  document.getElementById('videoTitle').value='';
+  document.getElementById('videoUrl').value='';
+  renderAll();
+});
+function renderTeacherVideos(){
+  const list = document.getElementById('teacherVideoList');
+  const empty = document.getElementById('videoEmpty');
+  list.innerHTML='';
+  empty.classList.toggle('hidden', DB.videos.length>0);
+  DB.videos.slice().reverse().forEach((v, revIdx)=>{
+    const div = document.createElement('div');
+    div.className='video-item';
+    div.innerHTML = `<div class="thumb">▶</div><div class="grow"><a href="${escapeAttr(v.url)}" target="_blank" rel="noopener">${escapeHtml(v.title)}</a><div class="desc">${v.class==='all'?t('allClasses'):(currentLang==='hi'?'कक्षा ':'Class ')+v.class}</div></div>`;
+    list.appendChild(div);
+  });
+}
+
+/* --- Teacher: Attendance mail --- */
+document.getElementById('saveTeacherEmailBtn').addEventListener('click', ()=>{
+  DB.teacherEmail = document.getElementById('teacherEmailInput').value.trim();
+  saveDB();
+});
+function buildMailBody(a){
+  const lines = currentLang==='hi' ? [
+    `प्रिय ${a.name},`,'',
+    `आज की उपस्थिति रिपोर्ट:`,
+    `स्थिति: ${a.status==='present'?'उपस्थित':'अनुपस्थित'}`,
+    `लॉगिन समय: ${a.loginTime||'—'}`,
+    `लॉगआउट समय: ${a.logoutTime||'—'}`,
+    '', `धन्यवाद,`, `${session.name}`
+  ] : [
+    `Dear ${a.name},`,'',
+    `Today's attendance report:`,
+    `Status: ${a.status==='present'?'Present':'Absent'}`,
+    `Login time: ${a.loginTime||'—'}`,
+    `Logout time: ${a.logoutTime||'—'}`,
+    '', `Regards,`, `${session.name}`
+  ];
+  return lines.join('\n');
+}
+function renderTeacherMail(){
+  const body = document.getElementById('mailTableBody');
+  const empty = document.getElementById('mailEmpty');
+  body.innerHTML='';
+  const today = todayStr();
+  const todays = DB.attendance.filter(a=>a.date===today);
+  empty.classList.toggle('hidden', todays.length>0);
+  todays.forEach(a=>{
+    const tr = document.createElement('tr');
+    const subject = encodeURIComponent((currentLang==='hi'?'उपस्थिति - ':'Attendance - ') + a.name + ' - ' + today);
+    const bodyText = encodeURIComponent(buildMailBody(a));
+    const cc = DB.teacherEmail ? `&cc=${encodeURIComponent(DB.teacherEmail)}` : '';
+    const mailto = `mailto:?subject=${subject}${cc}&body=${bodyText}`;
+    tr.innerHTML = `<td>${escapeHtml(a.name)}</td>
+      <td><span class="pill ${a.status==='present'?'present':'absent'}">${a.status==='present' ? (currentLang==='hi'?'उपस्थित':'Present') : (currentLang==='hi'?'अनुपस्थित':'Absent')}</span></td>
+      <td>${a.loginTime||'—'}</td><td>${a.logoutTime||'—'}</td>
+      <td><a class="action-link" href="${mailto}">${currentLang==='hi'?'ईमेल भेजें':'Send Email'}</a></td>`;
+    body.appendChild(tr);
+  });
+}
+
+/* =========================================================================
+   ESCAPING HELPERS
+   ========================================================================= */
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(str){ return escapeHtml(str); }
+
+/* =========================================================================
+   MASTER RENDER
+   ========================================================================= */
+function renderAll(){
+  if(session.role==='teacher'){
+    populateStudentSelect();
+    renderTeacherOverview();
+    renderTeacherAttendance();
+    renderTeacherMarks();
+    renderTeacherAssignments();
+    renderTeacherRanking();
+    renderTeacherVideos();
+    renderTeacherMail();
+  } else if(session.role==='student'){
+    const activeTab = document.querySelector('.tabbar button.active');
+    if(activeTab && activeTab.dataset.stab==='videos') renderStudentVideos();
+    if(activeTab && activeTab.dataset.stab==='rank') renderStudentRank();
+    if(activeTab && activeTab.dataset.stab==='progress') renderStudentProgress();
+  }
+}
+
+/* initial translation application */
+applyTranslations();
+updateOfflineBanner();
+</script>
+</body>
+</html>
