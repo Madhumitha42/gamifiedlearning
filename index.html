@@ -372,6 +372,7 @@ table tr:last-child td{border-bottom:none;}
       <button data-ttab="marks" data-i18n="tTabMarks">Marks & Tests</button>
       <button data-ttab="assignments" data-i18n="tTabAssignments">Assignments</button>
       <button data-ttab="ranking" data-i18n="tTabRanking">Ranking</button>
+      <button data-ttab="quiz" data-i18n="tTabQuiz">Quiz Editor</button>
       <button data-ttab="videos" data-i18n="tTabVideos">Videos</button>
       <button data-ttab="mail" data-i18n="tTabMail">Attendance Mail</button>
     </div>
@@ -457,6 +458,48 @@ table tr:last-child td{border-bottom:none;}
           <thead><tr><th data-i18n="colRank">Rank</th><th data-i18n="colName">Name</th><th data-i18n="colClass">Class</th><th data-i18n="colScore">Total Score</th></tr></thead>
           <tbody id="teacherRankTableBody"></tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- QUIZ EDITOR (teacher-only) -->
+    <div id="ttab-quiz" class="hidden">
+      <div class="t-section">
+        <h3 id="quizFormTitle" data-i18n="addQuestion">Add a Question</h3>
+        <p class="small-note" data-i18n="quizEditNote">Write the question and four answer options, then mark which one is correct. Students will see this in their own selected language if you provide one — otherwise it falls back to English.</p>
+        <input type="hidden" id="quizEditId" value="">
+        <div class="form-grid">
+          <div class="field" style="grid-column:1/-1;">
+            <label data-i18n="fieldQuestionText">Question</label>
+            <input id="quizQuestionInput" type="text" placeholder="e.g. What is 7 + 8?">
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label data-i18n="fieldOption">Option A</label><input id="quizOpt0" type="text"></div>
+          <div class="field"><label data-i18n="fieldOption">Option B</label><input id="quizOpt1" type="text"></div>
+          <div class="field"><label data-i18n="fieldOption">Option C</label><input id="quizOpt2" type="text"></div>
+          <div class="field"><label data-i18n="fieldOption">Option D</label><input id="quizOpt3" type="text"></div>
+        </div>
+        <div class="field" style="max-width:260px;">
+          <label data-i18n="fieldCorrectAnswer">Correct Answer</label>
+          <select id="quizCorrectSelect">
+            <option value="0">A</option>
+            <option value="1">B</option>
+            <option value="2">C</option>
+            <option value="3">D</option>
+          </select>
+        </div>
+        <div class="row" style="margin-top:10px;">
+          <button class="btn" id="saveQuizBtn" data-i18n="btnSave">Save</button>
+          <button class="btn outline hidden" id="cancelQuizEditBtn" data-i18n="btnCancel">Cancel</button>
+        </div>
+      </div>
+      <div class="t-section">
+        <h3 data-i18n="allQuestions">All Quiz Questions</h3>
+        <table>
+          <thead><tr><th data-i18n="colQuestion">Question</th><th data-i18n="colCorrectAnswer">Correct Answer</th><th data-i18n="colAction">Action</th></tr></thead>
+          <tbody id="quizTableBody"></tbody>
+        </table>
+        <div class="empty-state hidden" id="quizEmptyEditor" data-i18n="noRecords">No records yet.</div>
       </div>
     </div>
 
@@ -592,7 +635,19 @@ const STRINGS = {
   mailExplain:{en:"This app works fully offline and has no mail server, so it cannot send email by itself. Each row below is a ready-made attendance message — click \"Send Email\" to open it in your phone or computer's email app, addressed to the student (and you as teacher can CC yourself).",hi:"यह ऐप पूरी तरह ऑफ़लाइन काम करता है और इसमें कोई मेल सर्वर नहीं है, इसलिए यह स्वयं ईमेल नहीं भेज सकता। नीचे प्रत्येक पंक्ति एक तैयार उपस्थिति संदेश है — अपने फ़ोन या कंप्यूटर के ईमेल ऐप में खोलने के लिए \"Send Email\" पर क्लिक करें।",ta:"இந்த ஆப் முழுவதும் ஆஃப்லைனில் வேலை செய்கிறது, மெயில் சர்வர் இல்லை, எனவே தானாக மெயில் அனுப்ப முடியாது. கீழே உள்ள ஒவ்வொரு வரியும் தயார் செய்யப்பட்ட வருகை செய்தி — \"Send Email\" கிளிக் செய்யவும்.",te:"ఈ యాప్ పూర్తిగా ఆఫ్‌లైన్‌లో పనిచేస్తుంది, మెయిల్ సర్వర్ లేదు, కాబట్టి స్వయంగా ఇమెయిల్ పంపలేరు. దిగువ ఉన్న ప్రతి వరుస సిద్ధంగా ఉన్న హాజరు సందేశం — \"Send Email\" క్లిక్ చేయండి.",bn:"এই অ্যাপ সম্পূর্ণ অফলাইনে কাজ করে এবং কোনো মেইল সার্ভার নেই, তাই এটি নিজে ইমেইল পাঠাতে পারে না। নিচের প্রতিটি সারি একটি তৈরি উপস্থিতি বার্তা — \"Send Email\" ক্লিক করুন।",kn:"ಈ ಆಪ್ ಸಂಪೂರ್ಣ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಕೆಲಸ ಮಾಡುತ್ತದೆ, ಮೈಲ್ ಸರ್ವರ್ ಇಲ್ಲ, ಆದ್ದರಿಂದ ಸ್ವತಃ ಇಮೇಲ್ ಕಳುಹಿಸಲಾಗುವುದಿಲ್ಲ. ಕೆಳಗಿನ ಪ್ರತಿ ಸಾಲು ತಯಾರಾದ ಹಾಜರಾತಿ ಸಂದೇಶ — \"Send Email\" ಕ್ಲಿಕ್ ಮಾಡಿ.",mr:"हे अॅप संपूर्ण ऑफलाइन काम करते आणि मेल सर्व्हर नाही, त्यामुळे स्वतः ईमेल पाठवू शकत नाही. खालील प्रत्येक ओळ तयार उपस्थिती संदेश आहे — \"Send Email\" क्लिक करा.",gu:"આ એપ સંપૂર્ણપણે ઓફલાઇન કામ કરે છે અને તેમાં મેઇલ સર્વર નથી, તેથી તે જાતે ઈમેલ મોકલી શકતું નથી. નીચેની દરેક પંક્તિ તૈયાર હાજરી સંદેશ છે — \"Send Email\" ક્લિક કરો.",pa:"ਇਹ ਐਪ ਪੂਰੀ ਤਰ੍ਹਾਂ ਆਫਲਾਈਨ ਕੰਮ ਕਰਦੀ ਹੈ ਅਤੇ ਇਸ ਵਿੱਚ ਮੇਲ ਸਰਵਰ ਨਹੀਂ ਹੈ, ਇਸ ਲਈ ਇਹ ਖੁਦ ਈਮੇਲ ਨਹੀਂ ਭੇਜ ਸਕਦੀ। ਹੇਠਾਂ ਹਰ ਕਤਾਰ ਇੱਕ ਤਿਆਰ ਹਾਜ਼ਰੀ ਸੁਨੇਹਾ ਹੈ — \"Send Email\" ਤੇ ਕਲਿੱਕ ਕਰੋ।",ml:"ഈ ആപ്പ് പൂർണ്ണമായും ഓഫ്‌ലൈനായി പ്രവർത്തിക്കുന്നു, മെയിൽ സെർവർ ഇല്ല, അതിനാൽ സ്വയം ഇമെയിൽ അയയ്ക്കാൻ കഴിയില്ല. ചുവടെയുള്ള ഓരോ വരിയും തയ്യാറായ ഹാജർ സന്ദേശമാണ് — \"Send Email\" ക്ലിക്ക് ചെയ്യുക.",or:"ଏହି ଆପ୍ ସମ୍ପୂର୍ଣ୍ଣ ଅଫଲାଇନରେ କାମ କରେ ଏବଂ ମେଲ ସର୍ଭର ନାହିଁ, ତେଣୁ ଏହା ଆପେ ଇମେଲ ପଠାଇ ପାରିବ ନାହିଁ। ତଳର ପ୍ରତ୍ୟେକ ଧାଡି ଏକ ତୟାର ଉପସ୍ଥିତି ସମ୍ବାଦ — \"Send Email\" କ୍ଲିକ କରନ୍ତୁ।",as:"এই এপটো সম্পূর্ণ অফলাইনত কাম কৰে আৰু মেইল চাৰ্ভাৰ নাই, সেইবাবে ই নিজে ইমেইল পাঠাব নোৱাৰে। তলৰ প্ৰতিটো শাৰী এটা সাজু কৰা উপস্থিতি বাৰ্তা — \"Send Email\" ক্লিক কৰক।",ur:"یہ ایپ مکمل طور پر آف لائن کام کرتی ہے اور اس میں میل سرور نہیں ہے، اس لیے یہ خود ای میل نہیں بھیج سکتی۔ نیچے ہر قطار ایک تیار حاضری پیغام ہے — \"Send Email\" پر کلک کریں۔"},
   colAction:{en:"Action",hi:"कार्रवाई",ta:"செயல்",te:"చర్య",bn:"কার্যকলাপ",kn:"ಕ್ರಿಯೆ",mr:"क्रिया",gu:"ક્રિયા",pa:"ਕਾਰਵਾਈ",ml:"പ്രവർത്തനം",or:"କାର୍ଯ୍ୟ",as:"কাৰ্য",ur:"عمل"},
   teacherEmailSetup:{en:"Your Email (for CC / records)",hi:"आपका ईमेल (सीसी / रिकॉर्ड के लिए)",ta:"உங்கள் மின்னஞ்சல் (CC / பதிவுகளுக்கு)",te:"మీ ఇమెయిల్ (CC / రికార్డుల కోసం)",bn:"আপনার ইমেইল (সিসি / রেকর্ডের জন্য)",kn:"ನಿಮ್ಮ ಇಮೇಲ್ (CC / ದಾಖಲೆಗಳಿಗಾಗಿ)",mr:"तुमचा ईमेल (CC / नोंदींसाठी)",gu:"તમારો ઈમેલ (CC / રેકોર્ડ માટે)",pa:"ਤੁਹਾਡੀ ਈਮੇਲ (CC / ਰਿਕਾਰਡ ਲਈ)",ml:"നിന്റെ ഇമെയിൽ (CC / രേഖകൾക്ക്)",or:"ତୁମର ଇମେଲ (CC / ରେକର୍ଡ ପାଇଁ)",as:"আপোনাৰ ইমেইল (CC / ৰেকর্ডৰ বাবে)",ur:"آپ کا ای میل (سی سی / ریکارڈ کے لیے)"},
-  attToday:{en:"Today's Attendance Log",hi:"आज का उपस्थिति लॉग",ta:"இன்றைய வருகை பதிவு",te:"నేటి హాజరు లాగ్",bn:"আজকের উপস্থিতি লগ",kn:"ಇಂದಿನ ಹಾಜರಾತಿ ಲಾಗ್",mr:"आजचा उपस्थिती लॉग",gu:"આજનો હાજરી લોગ",pa:"ਅੱਜ ਦਾ ਹਾਜ਼ਰੀ ਲੌਗ",ml:"ഇന്നത്തെ ഹാജർ ലോഗ്",or:"ଆଜିର ଉପସ୍ଥିତି ଲଗ",as:"আজিৰ উপস্থিতি লগ",ur:"آج کا حاضری لاگ"}
+  attToday:{en:"Today's Attendance Log",hi:"आज का उपस्थिति लॉग",ta:"இன்றைய வருகை பதிவு",te:"నేటి హాజరు లాగ్",bn:"আজকের উপস্থিতি লগ",kn:"ಇಂದಿನ ಹಾಜರಾತಿ ಲಾಗ್",mr:"आजचा उपस्थिती लॉग",gu:"આજનો હાજરી લોગ",pa:"ਅੱਜ ਦਾ ਹਾਜ਼ਰੀ ਲੌਗ",ml:"ഇന്നത്തെ ഹാജർ ലോഗ്",or:"ଆଜିର ଉପସ୍ଥିତି ଲଗ",as:"আজিৰ উপস্থিতি লগ",ur:"آج کا حاضری لاگ"},
+  tTabQuiz:{en:"Quiz Editor",hi:"प्रश्नोत्तरी संपादक",ta:"வினாடி வினா எடிட்டர்",te:"క్విజ్ ఎడిటర్",bn:"কুইজ এডিটর",kn:"ಕ್ವಿಜ್ ಎಡಿಟರ್",mr:"प्रश्नमंजुषा संपादक",gu:"ક્વિઝ એડિટર",pa:"ਕਵਿਜ਼ ਐਡੀਟਰ",ml:"ക്വിസ് എഡിറ്റർ",or:"କୁଇଜ ଏଡିଟର",as:"কুইজ এডিটৰ",ur:"کوئز ایڈیٹر"},
+  addQuestion:{en:"Add a Question",hi:"प्रश्न जोड़ें",ta:"கேள்வி சேர்",te:"ప్రశ్న జోడించండి",bn:"প্রশ্ন যুক্ত করুন",kn:"ಪ್ರಶ್ನೆ ಸೇರಿಸಿ",mr:"प्रश्न जोडा",gu:"પ્રશ્ન ઉમેરો",pa:"ਸਵਾਲ ਸ਼ਾਮਲ ਕਰੋ",ml:"ചോദ്യം ചേർക്കുക",or:"ପ୍ରଶ୍ନ ଯୋଡନ୍ତୁ",as:"প্ৰশ্ন যোগ কৰক",ur:"سوال شامل کریں"},
+  quizEditNote:{en:"Write the question and four answer options, then mark which one is correct. Students will see this in their own selected language if you provide one — otherwise it falls back to English.",hi:"प्रश्न और चार उत्तर विकल्प लिखें, फिर सही उत्तर चुनें। छात्र इसे अपनी भाषा में देखेंगे, अन्यथा यह अंग्रेजी में दिखेगा।",ta:"கேள்வியையும் நான்கு விருப்பங்களையும் எழுதவும், பின் சரியான பதிலைக் குறிக்கவும்.",te:"ప్రశ్న మరియు నాలుగు ఎంపికలు రాయండి, ఆపై సరైన సమాధానాన్ని గుర్తించండి.",bn:"প্রশ্ন এবং চারটি উত্তর বিকল্প লিখুন, তারপর সঠিক উত্তর চিহ্নিত করুন।",kn:"ಪ್ರಶ್ನೆ ಮತ್ತು ನಾಲ್ಕು ಆಯ್ಕೆಗಳನ್ನು ಬರೆಯಿರಿ, ನಂತರ ಸರಿಯಾದ ಉತ್ತರವನ್ನು ಗುರುತಿಸಿ.",mr:"प्रश्न आणि चार उत्तर पर्याय लिहा, नंतर बरोबर उत्तर निवडा.",gu:"પ્રશ્ન અને ચાર જવાબ વિકલ્પો લખો, પછી સાચો જવાબ પસંદ કરો.",pa:"ਸਵਾਲ ਅਤੇ ਚਾਰ ਜਵਾਬ ਵਿਕਲਪ ਲਿਖੋ, ਫਿਰ ਸਹੀ ਜਵਾਬ ਚੁਣੋ।",ml:"ചോദ്യവും നാല് ഓപ്ഷനുകളും എഴുതുക, പിന്നെ ശരിയായ ഉത്തരം അടയാളപ്പെടുത്തുക.",or:"ପ୍ରଶ୍ନ ଏବଂ ଚାରି ଉତ୍ତର ବିକଲ୍ପ ଲେଖନ୍ତୁ, ତାପରେ ସଠିକ ଉତ୍ତର ବାଛନ୍ତୁ।",as:"প্ৰশ্ন আৰু চাৰিটা উত্তৰ বিকল্প লিখক, তাৰ পিছত শুদ্ধ উত্তৰ চিহ্নিত কৰক।",ur:"سوال اور چار جوابی اختیارات لکھیں، پھر درست جواب کا نشان لگائیں۔"},
+  fieldQuestionText:{en:"Question",hi:"प्रश्न",ta:"கேள்வி",te:"ప్రశ్న",bn:"প্রশ্ন",kn:"ಪ್ರಶ್ನೆ",mr:"प्रश्न",gu:"પ્રશ્ન",pa:"ਸਵਾਲ",ml:"ചോദ്യം",or:"ପ୍ରଶ୍ନ",as:"প্ৰশ্ন",ur:"سوال"},
+  fieldOption:{en:"Option",hi:"विकल्प",ta:"விருப்பம்",te:"ఎంపిక",bn:"বিকল্প",kn:"ಆಯ್ಕೆ",mr:"पर्याय",gu:"વિકલ્પ",pa:"ਵਿਕਲਪ",ml:"ഓപ്ഷൻ",or:"ବିକଲ୍ପ",as:"বিকল্প",ur:"اختیار"},
+  fieldCorrectAnswer:{en:"Correct Answer",hi:"सही उत्तर",ta:"சரியான பதில்",te:"సరైన సమాధానం",bn:"সঠিক উত্তর",kn:"ಸರಿಯಾದ ಉತ್ತರ",mr:"बरोबर उत्तर",gu:"સાચો જવાબ",pa:"ਸਹੀ ਜਵਾਬ",ml:"ശരിയായ ഉത്തരം",or:"ସଠିକ ଉତ୍ତର",as:"শুদ্ধ উত্তৰ",ur:"درست جواب"},
+  btnCancel:{en:"Cancel",hi:"रद्द करें",ta:"ரத்து செய்",te:"రద్దు చేయండి",bn:"বাতিল করুন",kn:"ರದ್ದುಗೊಳಿಸಿ",mr:"रद्द करा",gu:"રદ કરો",pa:"ਰੱਦ ਕਰੋ",ml:"റദ്ദാക്കുക",or:"ବାତିଲ କରନ୍ତୁ",as:"বাতিল কৰক",ur:"منسوخ کریں"},
+  allQuestions:{en:"All Quiz Questions",hi:"सभी प्रश्नोत्तरी प्रश्न",ta:"அனைத்து வினாடி வினா கேள்விகள்",te:"అన్ని క్విజ్ ప్రశ్నలు",bn:"সকল কুইজ প্রশ্ন",kn:"ಎಲ್ಲಾ ಕ್ವಿಜ್ ಪ್ರಶ್ನೆಗಳು",mr:"सर्व प्रश्नमंजुषा प्रश्न",gu:"બધા ક્વિઝ પ્રશ્નો",pa:"ਸਾਰੇ ਕਵਿਜ਼ ਸਵਾਲ",ml:"എല്ലാ ക്വിസ് ചോദ്യങ്ങളും",or:"ସମସ୍ତ କୁଇଜ ପ୍ରଶ୍ନ",as:"সকলো কুইজ প্ৰশ্ন",ur:"تمام کوئز سوالات"},
+  colQuestion:{en:"Question",hi:"प्रश्न",ta:"கேள்வி",te:"ప్రశ్న",bn:"প্রশ্ন",kn:"ಪ್ರಶ್ನೆ",mr:"प्रश्न",gu:"પ્રશ્ન",pa:"ਸਵਾਲ",ml:"ചോദ്യം",or:"ପ୍ରଶ୍ନ",as:"প্ৰশ্ন",ur:"سوال"},
+  colCorrectAnswer:{en:"Correct Answer",hi:"सही उत्तर",ta:"சரியான பதில்",te:"సరైన సమాధానం",bn:"সঠিক উত্তর",kn:"ಸರಿಯಾದ ಉತ್ತರ",mr:"बरोबर उत्तर",gu:"સાચો જવાબ",pa:"ਸਹੀ ਜਵਾਬ",ml:"ശരിയായ ഉത്തരം",or:"ସଠିକ ଉତ୍ତର",as:"শুদ্ধ উত্তৰ",ur:"درست جواب"},
+  btnEdit:{en:"Edit",hi:"संपादित करें",ta:"திருத்து",te:"సవరించు",bn:"সম্পাদনা করুন",kn:"ಸಂಪಾದಿಸಿ",mr:"संपादित करा",gu:"સંપાદિત કરો",pa:"ਸੋਧੋ",ml:"എഡിറ്റ് ചെയ്യുക",or:"ସମ୍ପାଦନ କରନ୍ତୁ",as:"সম্পাদনা কৰক",ur:"ترمیم کریں"},
+  btnDelete:{en:"Delete",hi:"हटाएं",ta:"நீக்கு",te:"తొలగించు",bn:"মুছুন",kn:"ಅಳಿಸಿ",mr:"काढा",gu:"કાઢી નાખો",pa:"ਮਿਟਾਓ",ml:"ഇല്ലാതാക്കുക",or:"ବିଲୋପ କରନ୍ତୁ",as:"মুছি পেলাওক",ur:"حذف کریں"}
 };
 
 let currentLang = localStorage.getItem('gv_lang') || 'en';
@@ -641,10 +696,12 @@ function loadDB(){
     marks:[],         // {studentId,name,testName,obtained,total,date}
     assignments:[],   // {title,due,class}
     videos:[],        // {title,url,class}
+    customQuiz:[],    // {id, question:{en,...}, opts:[4 strings], answer:0-3}
     teacherEmail:''
   };
 }
 let DB = loadDB();
+if(!Array.isArray(DB.customQuiz)) DB.customQuiz = [];
 function saveDB(){
   try{ localStorage.setItem(DB_KEY, JSON.stringify(DB)); }catch(e){}
 }
@@ -680,7 +737,15 @@ const QUIZ_BANK = [
    STATE
    ========================================================================= */
 let session = { role:null, name:null, cls:null, studentId:null };
-let quizState = { idx:0, score:0, total:QUIZ_BANK.length, correctStreak:0 };
+let quizState = { idx:0, score:0, total:QUIZ_BANK.length, correctStreak:0, bank:QUIZ_BANK };
+
+function getActiveQuizBank(){
+  // Teacher-added questions take priority if any exist; otherwise use built-in sample bank.
+  if(DB.customQuiz && DB.customQuiz.length > 0){
+    return DB.customQuiz.map(q => ({ q: q.question, opts: q.opts, answer: q.answer }));
+  }
+  return QUIZ_BANK;
+}
 
 /* =========================================================================
    LOGIN SCREEN LOGIC
@@ -798,13 +863,19 @@ document.getElementById('studentLogoutBtn').addEventListener('click', ()=>{
 
 /* --- Quiz --- */
 function resetQuiz(){
-  quizState = {idx:0, score:0, total:QUIZ_BANK.length, correctStreak:0};
+  const bank = getActiveQuizBank();
+  quizState = {idx:0, score:0, total:bank.length, correctStreak:0, bank};
   document.getElementById('quizCard').classList.remove('hidden');
   document.getElementById('quizDoneCard').classList.add('hidden');
   renderQuizQuestion();
 }
 function renderQuizQuestion(){
-  const item = QUIZ_BANK[quizState.idx % QUIZ_BANK.length];
+  if(quizState.bank.length === 0){
+    document.getElementById('quizQuestion').textContent = currentLang==='hi' ? 'अभी कोई प्रश्न उपलब्ध नहीं है। शिक्षक से प्रश्न जोड़ने को कहें।' : 'No questions yet. Ask your teacher to add some!';
+    document.getElementById('quizOptions').innerHTML='';
+    return;
+  }
+  const item = quizState.bank[quizState.idx % quizState.bank.length];
   const qText = item.q[currentLang] || item.q.en;
   document.getElementById('quizQuestion').textContent = qText;
   document.getElementById('quizProgressFill').style.width = (quizState.idx/quizState.total*100)+'%';
@@ -929,7 +1000,7 @@ document.querySelectorAll('.t-tabs button').forEach(btn=>{
 });
 function renderTeacherTabs(tab){
   document.querySelectorAll('.t-tabs button').forEach(b=> b.classList.toggle('active', b.dataset.ttab===tab));
-  ['overview','attendance','marks','assignments','ranking','videos','mail'].forEach(name=>{
+  ['overview','attendance','marks','assignments','ranking','quiz','videos','mail'].forEach(name=>{
     document.getElementById('ttab-'+name).classList.toggle('hidden', name!==tab);
   });
 }
@@ -1058,6 +1129,104 @@ function renderTeacherRanking(){
   });
 }
 
+/* --- Teacher: Quiz Editor --- */
+let quizEditingId = null;
+
+document.getElementById('saveQuizBtn').addEventListener('click', ()=>{
+  const question = document.getElementById('quizQuestionInput').value.trim();
+  const opts = [
+    document.getElementById('quizOpt0').value.trim(),
+    document.getElementById('quizOpt1').value.trim(),
+    document.getElementById('quizOpt2').value.trim(),
+    document.getElementById('quizOpt3').value.trim()
+  ];
+  const answer = parseInt(document.getElementById('quizCorrectSelect').value, 10);
+
+  if(!question || opts.some(o=>!o)){
+    alert(currentLang==='hi' ? 'कृपया प्रश्न और सभी चार विकल्प भरें' : 'Please fill in the question and all four options');
+    return;
+  }
+
+  if(quizEditingId){
+    const existing = DB.customQuiz.find(q=>q.id===quizEditingId);
+    if(existing){
+      existing.question = Object.assign({}, existing.question, {en: question, [currentLang]: question});
+      existing.opts = opts;
+      existing.answer = answer;
+    }
+  } else {
+    DB.customQuiz.push({
+      id: 'q_' + Date.now() + '_' + Math.floor(Math.random()*1000),
+      question: { en: question, [currentLang]: question },
+      opts, answer
+    });
+  }
+  saveDB();
+  resetQuizForm();
+  renderTeacherQuiz();
+});
+
+document.getElementById('cancelQuizEditBtn').addEventListener('click', resetQuizForm);
+
+function resetQuizForm(){
+  quizEditingId = null;
+  document.getElementById('quizEditId').value='';
+  document.getElementById('quizQuestionInput').value='';
+  document.getElementById('quizOpt0').value='';
+  document.getElementById('quizOpt1').value='';
+  document.getElementById('quizOpt2').value='';
+  document.getElementById('quizOpt3').value='';
+  document.getElementById('quizCorrectSelect').value='0';
+  document.getElementById('quizFormTitle').textContent = t('addQuestion');
+  document.getElementById('cancelQuizEditBtn').classList.add('hidden');
+}
+
+function startEditQuestion(id){
+  const item = DB.customQuiz.find(q=>q.id===id);
+  if(!item) return;
+  quizEditingId = id;
+  document.getElementById('quizEditId').value = id;
+  document.getElementById('quizQuestionInput').value = item.question[currentLang] || item.question.en || '';
+  document.getElementById('quizOpt0').value = item.opts[0] || '';
+  document.getElementById('quizOpt1').value = item.opts[1] || '';
+  document.getElementById('quizOpt2').value = item.opts[2] || '';
+  document.getElementById('quizOpt3').value = item.opts[3] || '';
+  document.getElementById('quizCorrectSelect').value = String(item.answer);
+  document.getElementById('quizFormTitle').textContent = currentLang==='hi' ? 'प्रश्न संपादित करें' : 'Edit Question';
+  document.getElementById('cancelQuizEditBtn').classList.remove('hidden');
+  document.getElementById('quizQuestionInput').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function deleteQuestion(id){
+  const ok = confirm(currentLang==='hi' ? 'इस प्रश्न को हटाएं?' : 'Delete this question?');
+  if(!ok) return;
+  DB.customQuiz = DB.customQuiz.filter(q=>q.id!==id);
+  saveDB();
+  if(quizEditingId === id) resetQuizForm();
+  renderTeacherQuiz();
+}
+
+function renderTeacherQuiz(){
+  const body = document.getElementById('quizTableBody');
+  const empty = document.getElementById('quizEmptyEditor');
+  body.innerHTML='';
+  empty.classList.toggle('hidden', DB.customQuiz.length>0);
+  DB.customQuiz.slice().reverse().forEach(q=>{
+    const tr = document.createElement('tr');
+    const qText = q.question[currentLang] || q.question.en || '';
+    const correctText = q.opts[q.answer] || '';
+    tr.innerHTML = `<td>${escapeHtml(qText)}</td><td>${escapeHtml(correctText)}</td>
+      <td><a class="action-link" href="#" data-edit="${q.id}">${t('btnEdit')}</a><a class="action-link" href="#" data-delete="${q.id}">${t('btnDelete')}</a></td>`;
+    body.appendChild(tr);
+  });
+  body.querySelectorAll('[data-edit]').forEach(el=>{
+    el.addEventListener('click', e=>{ e.preventDefault(); startEditQuestion(el.dataset.edit); });
+  });
+  body.querySelectorAll('[data-delete]').forEach(el=>{
+    el.addEventListener('click', e=>{ e.preventDefault(); deleteQuestion(el.dataset.delete); });
+  });
+}
+
 /* --- Teacher: Videos (teacher-only upload) --- */
 document.getElementById('addVideoBtn').addEventListener('click', ()=>{
   const title = document.getElementById('videoTitle').value.trim();
@@ -1147,6 +1316,8 @@ function renderAll(){
     renderTeacherMarks();
     renderTeacherAssignments();
     renderTeacherRanking();
+    if(!quizEditingId) resetQuizForm();
+    renderTeacherQuiz();
     renderTeacherVideos();
     renderTeacherMail();
   } else if(session.role==='student'){
